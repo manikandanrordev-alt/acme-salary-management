@@ -9,6 +9,7 @@ import EmployeeDetailPage from './pages/EmployeeDetailPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import PayslipsPage from './pages/PayslipsPage'
 import AiAdvisorPage from './pages/AiAdvisorPage'
+import HrSuitePage from './pages/HrSuitePage'
 import HealthPage from './pages/HealthPage'
 
 const darkTheme = createTheme({
@@ -47,6 +48,7 @@ export default function App() {
                   <Route path="/employees" element={<EmployeeDirectoryPage />} />
                   <Route path="/employees/:id" element={<EmployeeDetailPage />} />
                   <Route path="/payslips" element={<PayslipsPage />} />
+                  <Route path="/hr-suite" element={<HrSuitePage />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
                   <Route path="/ai-advisor" element={<AiAdvisorPage />} />
                   <Route path="/health" element={<HealthPage />} />

@@ -342,4 +342,121 @@ describe('App Routing & Authentication Flow', () => {
       expect(screen.getByRole('heading', { name: /AI Compensation & Retention Intelligence/i })).toBeInTheDocument()
     })
   })
+
+  it('navigates to HR Executive Suite page and renders tax optimizer and FNF settlement desks', async () => {
+    apiClient.get.mockImplementation((url) => {
+      if (url === '/api/v1/auth/me') {
+        return Promise.resolve({
+          data: { data: { user: { id: 1, email: 'hr_director@acme.com', role: 'hr_manager' } } },
+        })
+      }
+      if (url === '/api/v1/departments') {
+        return Promise.resolve({ data: { data: [] } })
+      }
+      if (url === '/api/v1/employees') {
+        return Promise.resolve({ data: { data: [], meta: { total_count: 0 } } })
+      }
+      if (url === '/api/v1/hr_suite/overview') {
+        return Promise.resolve({
+          data: {
+            metrics: {
+              total_headcount: 10000,
+              monthly_wage_bill: 745000000,
+              annual_wage_bill: 8940000000,
+              gratuity_reserve_liability: 215000000,
+              statutory_compliance_rate: 100.0,
+            },
+            statutory_filings: [],
+            appraisal_cycle: { allocated_budget: 76000000 },
+          },
+        })
+      }
+      if (url === '/api/v1/hr_suite/appraisal_distribution') {
+        return Promise.resolve({
+          data: {
+            merit_pool_budget: 804600000,
+            total_annual_wage_bill: 8940000000,
+            bell_curve: [],
+          },
+        })
+      }
+      return Promise.reject(new Error('not found'))
+    })
+    apiClient.post.mockImplementation((url) => {
+      if (url === '/api/v1/hr_suite/compare_tax') {
+        return Promise.resolve({
+          data: {
+            annual_gross: 1400000,
+            recommended_regime: 'NEW_REGIME',
+            annual_tax_difference: 42500,
+            monthly_tax_savings: 3541.67,
+            summary_verdict: 'New Tax Regime saves ₹42,500 annually',
+            new_regime: {
+              standard_deduction: 75000,
+              taxable_income: 1325000,
+              tax_before_cess: 105000,
+              cess: 4200,
+              total_tax: 109200,
+              monthly_tds: 9100,
+              slabs_breakdown: [],
+            },
+            old_regime: {
+              total_deductions: 505000,
+              taxable_income: 895000,
+              tax_before_cess: 146000,
+              cess: 5840,
+              total_tax: 151840,
+              monthly_tds: 12653.33,
+            },
+          },
+        })
+      }
+      if (url === '/api/v1/hr_suite/calculate_ctc') {
+        return Promise.resolve({
+          data: {
+            annual_ctc: 1800000,
+            component_a_gross: {
+              title: 'Component A: Monthly Direct Gross Salary',
+              annual_total: 1512000,
+              monthly_total: 126000,
+              breakdown: {
+                basic: { monthly: 63000, annual: 756000 },
+                hra: { monthly: 25200, annual: 302400 },
+                conveyance: { monthly: 1600, annual: 19200 },
+                lta: { monthly: 3150, annual: 37800 },
+                special_allowance: { monthly: 33050, annual: 396600 },
+              },
+            },
+            component_b_retirals: {
+              title: 'Component B: Employer Retirals & Statutory Benefits',
+              annual_total: 216000,
+              breakdown: {
+                employer_epf: { monthly: 1800, annual: 21600 },
+                gratuity_accrual: { monthly: 3030.77, annual: 36369.24 },
+                group_mediclaim_insurance: { monthly: 1500, annual: 18000 },
+              },
+            },
+            employee_take_home: {
+              monthly_gross: 126000,
+              monthly_employee_pf: 1800,
+              monthly_professional_tax: 200,
+              monthly_estimated_tds: 10500,
+              monthly_net_in_hand: 113500,
+              annual_net_in_hand: 1362000,
+            },
+          },
+        })
+      }
+      return Promise.reject(new Error('not found'))
+    })
+
+    window.history.pushState({}, '', '/hr-suite')
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /HR Executive & Total Rewards Suite/i })).toBeInTheDocument()
+      expect(screen.getByText(/DIRECTOR TIER/i)).toBeInTheDocument()
+      expect(screen.getByText(/1. Form 16 & Tax Regime Optimizer/i)).toBeInTheDocument()
+    })
+  })
 })

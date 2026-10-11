@@ -43,6 +43,14 @@ Rails.application.routes.draw do
         get :anomalies
         post :salary_recommendation
       end
+
+      scope :hr_suite, controller: :hr_suite do
+        get :overview
+        post :compare_tax
+        post :calculate_fnf
+        post :calculate_ctc
+        get :appraisal_distribution
+      end
     end
   end
 end

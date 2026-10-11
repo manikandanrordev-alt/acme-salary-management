@@ -8,6 +8,7 @@ import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety'
 import LogoutIcon from '@mui/icons-material/Logout'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
@@ -92,6 +93,16 @@ export default function Navbar() {
               sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
             >
               Payslips & Payroll
+            </Button>
+            <Button
+              component={RouterLink}
+              to="/hr-suite"
+              startIcon={<AccountBalanceIcon sx={{ color: '#38bdf8' }} />}
+              variant={location.pathname.startsWith('/hr-suite') ? 'contained' : 'text'}
+              size="small"
+              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
+            >
+              HR Executive Suite
             </Button>
             <Button
               component={RouterLink}
