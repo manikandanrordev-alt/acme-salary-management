@@ -14,6 +14,8 @@ Rails.application.routes.draw do
         get "csrf", to: "sessions#csrf_token"
         get "hr_only", to: "sessions#hr_only"
       end
+
+      resources :employees, only: [ :index, :show ]
     end
   end
 end
