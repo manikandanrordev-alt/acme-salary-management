@@ -1,0 +1,46 @@
+# Backend (Rails)
+backend/tmp/
+backend/log/
+backend/storage/
+backend/public/assets
+backend/coverage/
+backend/vendor/bundle/
+backend/config/master.key
+backend/config/credentials/*.key
+backend/.byebug_history
+backend/db/*.sqlite3
+backend/db/*.sqlite3-*
+
+# Frontend (React / Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/coverage/
+frontend/.eslintcache
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Environment and secrets
+.env
+.env.production
+.env.staging
+*.pem
+*.key
+
+# IDE and OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Test & CI
+test-results/
+junit.xml
