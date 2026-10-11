@@ -72,7 +72,7 @@ acme-salary-management/
 │   │   ├── services/payroll/     # GratuityCalculator, TaxRegimeComparator, CtcBreakdown,
 │   │   │                         # IndiaTaxCalculator, DiwaliBonusService, PayslipGenerator
 │   │   └── mailers/              # PayslipMailer (HTML & Text corporate templates)
-│   ├── spec/                     # Comprehensive RSpec test suite (118 specs)
+│   ├── spec/                     # Comprehensive RSpec test suite (124 specs)
 │   └── config/routes.rb          # RESTful and executive API endpoints
 ├── frontend/
 │   ├── src/

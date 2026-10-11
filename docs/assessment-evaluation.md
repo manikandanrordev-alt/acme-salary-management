@@ -69,14 +69,14 @@ The solution is architected with a **Ruby on Rails 8 API** backend, a **React (M
 
 | Component | Framework | Count | Status |
 | :--- | :--- | :--- | :--- |
-| Backend Models | RSpec | 18 | Passing |
+| Backend Models & Seeds Integrity | RSpec | 28 | Passing |
 | Backend Queries | RSpec | 15 | Passing |
-| Backend Services | RSpec | 14 | Passing |
-| Backend Requests (Auth, Employees, Revisions, Analytics, CSV) | RSpec | 47 | Passing |
-| **Total Backend Tests** | **RSpec 7.1** | **94** | **100% Passing (0 failures)** |
-| Frontend Auth & Routing | Vitest & React Testing Library | 3 | Passing |
-| Frontend Analytics & CSV Actions | Vitest & React Testing Library | 2 | Passing |
-| **Total Frontend Tests** | **Vitest 4.1** | **5** | **100% Passing (0 failures)** |
-| Backend Linting | RuboCop Rails Omakase | 60 files | **0 offenses detected** |
-| Frontend Linting | Oxlint | 14 files | **0 errors** |
-| Production Bundle Build | Vite | - | **Compiled in 821ms** |
+| Backend Services (Tax, Gratuity, FNF, CTC) | RSpec | 26 | Passing |
+| Backend Requests & API Controllers | RSpec | 55 | Passing |
+| **Total Backend Tests** | **RSpec 7.1** | **124** | **100% Passing (0 failures)** |
+| Frontend Auth, Routing & Eye Toggle | Vitest & React Testing Library | 4 | Passing |
+| Frontend Analytics, CSV & Payroll Suites | Vitest & React Testing Library | 5 | Passing |
+| **Total Frontend Tests** | **Vitest 4.1** | **9** | **100% Passing (0 failures)** |
+| Backend Linting | RuboCop Rails Omakase | 83 files | **0 offenses detected** |
+| Frontend Linting | Oxlint | 19 files | **0 errors** |
+| Production Bundle Build | Vite | - | **Compiled cleanly (dist/assets)** |
