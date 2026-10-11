@@ -56,23 +56,23 @@ module Api
           dept_code = emp.department&.code || "ENG"
 
           benchmark_p75 = case dept_code
-                          when "ENG" then 28_00_000.0
-                          when "PRD" then 32_00_000.0
-                          when "SAL" then 22_00_000.0
-                          when "FIN" then 25_00_000.0
-                          else 18_00_000.0
-                          end
+          when "ENG" then 28_00_000.0
+          when "PRD" then 32_00_000.0
+          when "SAL" then 22_00_000.0
+          when "FIN" then 25_00_000.0
+          else 18_00_000.0
+          end
 
           gap = [ benchmark_p75 - inr_amt, 0.0 ].max
           gap_percentage = inr_amt > 0 ? ((gap / benchmark_p75) * 100).round(1) : 0
 
           risk_level = if gap_percentage > 30 || idx % 4 == 0
                          "HIGH"
-                       elsif gap_percentage > 15 || idx % 2 == 0
+          elsif gap_percentage > 15 || idx % 2 == 0
                          "MEDIUM"
-                       else
+          else
                          "LOW"
-                       end
+          end
 
           {
             employee_id: emp.id,
@@ -148,11 +148,11 @@ module Api
 
         # AI merit raise calculation
         increment_percentage = case perf_rating
-                               when 5 then 18.5
-                               when 4 then 12.0
-                               when 3 then 8.0
-                               else 4.0
-                               end
+        when 5 then 18.5
+        when 4 then 12.0
+        when 3 then 8.0
+        else 4.0
+        end
 
         proposed_ctc = (current_ctc * (1.0 + (increment_percentage / 100.0))).round(2)
         proposed_monthly_gross = (proposed_ctc / 12.0).round(2)

@@ -12,7 +12,7 @@ module Api
         active_salaries = SalaryRecord.current.sum(:amount)
         monthly_wage_bill = active_salaries.to_f
         annual_wage_bill = (monthly_wage_bill * 12.0).round(2)
-        
+
         # Enterprise reserves calculations
         estimated_basic_pool = monthly_wage_bill * 0.50
         annual_gratuity_liability_reserve = ((15.0 / (26.0 * 12.0)) * estimated_basic_pool * 12.0).round(2)

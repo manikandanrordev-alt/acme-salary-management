@@ -9,8 +9,8 @@ module Payroll
     end
 
     def initialize(annual_ctc, bonus_percentage: DEFAULT_BONUS_PERCENTAGE, is_festive_month: false)
-      @annual_ctc = [annual_ctc.to_f, 0.0].max
-      @bonus_percentage = [bonus_percentage.to_f, 0.0].max
+      @annual_ctc = [ annual_ctc.to_f, 0.0 ].max
+      @bonus_percentage = [ bonus_percentage.to_f, 0.0 ].max
       @is_festive_month = is_festive_month
     end
 
@@ -18,9 +18,9 @@ module Payroll
       annual_basic = @annual_ctc * 0.50
       bonus_amount = if @is_festive_month
                        ((annual_basic * (@bonus_percentage / 100.0))).round(2)
-                     else
+      else
                        0.0
-                     end
+      end
 
       {
         annual_ctc: @annual_ctc.round(2),

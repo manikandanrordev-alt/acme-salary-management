@@ -12,10 +12,10 @@ module Payroll
     end
 
     def initialize(annual_ctc, working_days: 30, lop_days: 0, festive_bonus: 0.0)
-      @annual_ctc = [annual_ctc.to_f, 0.0].max
-      @working_days = [working_days.to_i, 1].max
-      @lop_days = [lop_days.to_i, 0].max
-      @festive_bonus = [festive_bonus.to_f, 0.0].max
+      @annual_ctc = [ annual_ctc.to_f, 0.0 ].max
+      @working_days = [ working_days.to_i, 1 ].max
+      @lop_days = [ lop_days.to_i, 0 ].max
+      @festive_bonus = [ festive_bonus.to_f, 0.0 ].max
     end
 
     def decompose
@@ -23,7 +23,7 @@ module Payroll
 
       basic_pay = (monthly_gross * BASIC_PERCENTAGE).round(2)
       hra = (basic_pay * HRA_PERCENTAGE_OF_BASIC).round(2)
-      special_allowance = [monthly_gross - (basic_pay + hra), 0.0].max.round(2)
+      special_allowance = [ monthly_gross - (basic_pay + hra), 0.0 ].max.round(2)
 
       gross_earnings = (monthly_gross + @festive_bonus).round(2)
 
@@ -39,7 +39,7 @@ module Payroll
       lop_deduction = ((monthly_gross / @working_days.to_f) * @lop_days).round(2)
 
       total_deductions = (epf_deduction + pt_deduction + tds_tax_deduction + lop_deduction).round(2)
-      net_pay = [gross_earnings - total_deductions, 0.0].max.round(2)
+      net_pay = [ gross_earnings - total_deductions, 0.0 ].max.round(2)
 
       {
         annual_ctc: @annual_ctc.round(2),
@@ -57,7 +57,7 @@ module Payroll
         net_pay: net_pay,
         tax_info: tax_info,
         working_days: @working_days,
-        paid_leaves: [@working_days - @lop_days, 0].max,
+        paid_leaves: [ @working_days - @lop_days, 0 ].max,
         lop_days: @lop_days
       }
     end

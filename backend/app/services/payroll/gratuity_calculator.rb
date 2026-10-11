@@ -31,7 +31,7 @@ module Payroll
       raw_years = tenure_in_days / 365.25
       completed_years = (tenure_in_days / 365.25).floor
       fractional_days = tenure_in_days - (completed_years * 365.25)
-      
+
       # Rounding rule: If remaining service is > 6 months (180 days), round up to next completed year
       effective_years = fractional_days > 180 ? completed_years + 1 : completed_years
 
@@ -39,9 +39,9 @@ module Payroll
 
       if is_eligible && effective_years.positive?
         computed_gratuity = ((DAYS_FACTOR * @monthly_basic * effective_years) / DAYS_IN_MONTH).round(2)
-        final_gratuity = [computed_gratuity, STATUTORY_CAP].min
+        final_gratuity = [ computed_gratuity, STATUTORY_CAP ].min
         tax_exempt_portion = final_gratuity
-        taxable_portion = [computed_gratuity - STATUTORY_CAP, 0.0].max
+        taxable_portion = [ computed_gratuity - STATUTORY_CAP, 0.0 ].max
       else
         computed_gratuity = 0.0
         final_gratuity = 0.0
@@ -73,9 +73,9 @@ module Payroll
     # Leave encashment calculation: (Basic / 30) * unused earned leaves
     def self.calculate_leave_encashment(monthly_basic:, leave_days:, max_exemption: 2_500_000.00)
       basic_per_day = (monthly_basic.to_f / 30.0)
-      gross_encashment = (basic_per_day * [leave_days.to_f, 0.0].max).round(2)
-      exempt_amount = [gross_encashment, max_exemption].min
-      taxable_amount = [gross_encashment - max_exemption, 0.0].max
+      gross_encashment = (basic_per_day * [ leave_days.to_f, 0.0 ].max).round(2)
+      exempt_amount = [ gross_encashment, max_exemption ].min
+      taxable_amount = [ gross_encashment - max_exemption, 0.0 ].max
 
       {
         monthly_basic: monthly_basic.to_f,
@@ -121,7 +121,7 @@ module Payroll
       )
 
       # 4. Notice Period Shortfall Recovery
-      notice_shortfall_days = [notice_period_days.to_f - notice_served_days.to_f, 0.0].max
+      notice_shortfall_days = [ notice_period_days.to_f - notice_served_days.to_f, 0.0 ].max
       notice_recovery = (daily_gross * notice_shortfall_days).round(2)
 
       # 5. Earnings total

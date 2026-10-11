@@ -32,23 +32,23 @@ class Payslip < ApplicationRecord
     amount_int = net_pay.to_i
     return "Zero Rupees Only" if amount_int.zero?
 
-    units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-             "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
-    tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+    units = [ "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+             "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" ]
+    tens = [ "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" ]
 
     helper = lambda do |n|
       if n < 20
         units[n]
       elsif n < 100
-        [tens[n / 10], units[n % 10]].reject(&:empty?).join(" ")
+        [ tens[n / 10], units[n % 10] ].reject(&:empty?).join(" ")
       elsif n < 1000
-        [units[n / 100], "Hundred", helper.call(n % 100)].reject(&:empty?).join(" ")
+        [ units[n / 100], "Hundred", helper.call(n % 100) ].reject(&:empty?).join(" ")
       elsif n < 100_000 # Thousand
-        [helper.call(n / 1000), "Thousand", helper.call(n % 1000)].reject(&:empty?).join(" ")
+        [ helper.call(n / 1000), "Thousand", helper.call(n % 1000) ].reject(&:empty?).join(" ")
       elsif n < 10_000_000 # Lakh
-        [helper.call(n / 100_000), "Lakh", helper.call(n % 100_000)].reject(&:empty?).join(" ")
+        [ helper.call(n / 100_000), "Lakh", helper.call(n % 100_000) ].reject(&:empty?).join(" ")
       else # Crore
-        [helper.call(n / 10_000_000), "Crore", helper.call(n % 10_000_000)].reject(&:empty?).join(" ")
+        [ helper.call(n / 10_000_000), "Crore", helper.call(n % 10_000_000) ].reject(&:empty?).join(" ")
       end
     end
 

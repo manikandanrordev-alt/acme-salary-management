@@ -72,7 +72,47 @@ export default function HrSuitePage() {
     assetDeductions: 0,
     tdsDeduction: 6500,
   })
-  const [fnfResult, setFnfResult] = useState(null)
+  const defaultFnfResult = {
+    employee_info: {
+      name: 'Aarav Patel',
+      monthly_gross: 85000,
+      monthly_basic: 42500,
+      joining_date: '2019-06-15',
+      exit_date: '2026-10-31',
+    },
+    settlement: {
+      settlement_summary: {
+        total_earnings: 235123.08,
+        total_deductions: 6500.0,
+        net_payable: 228623.08,
+        status: 'PAYABLE_TO_EMPLOYEE',
+      },
+      earnings_breakdown: {
+        unpaid_days: 12,
+        earned_salary_for_unpaid_days: 34000.0,
+        gratuity: {
+          tenure_years: 7.38,
+          effective_completed_years: 7,
+          is_vested: true,
+          payable_amount: 171634.62,
+        },
+        leave_encashment: {
+          leave_days: 18,
+          daily_basic_rate: 1416.67,
+          gross_leave_encashment: 25500.0,
+        },
+        statutory_bonus_accrual: 21240.0,
+      },
+      deductions_breakdown: {
+        notice_shortfall_days: 0,
+        notice_recovery_amount: 0.0,
+        asset_deductions: 0.0,
+        tds_deduction: 6500.0,
+      },
+    },
+  }
+
+  const [fnfResult, setFnfResult] = useState(defaultFnfResult)
   const [fnfLoading, setFnfLoading] = useState(false)
 
   // Tab 3: CTC Breakdown State
@@ -90,6 +130,7 @@ export default function HrSuitePage() {
   // Fetch initial overview
   useEffect(() => {
     fetchOverview()
+    runFnfSettlement()
   }, [])
 
   // Auto-calculate tax on change
@@ -245,89 +286,105 @@ export default function HrSuitePage() {
         </Box>
 
         {/* Executive Ribbon KPI Cards */}
-        <Grid container spacing={2.5} sx={{ mb: 4 }}>
+        <Grid container spacing={2.5} sx={{ mb: 4, alignItems: 'stretch' }}>
           <Grid item xs={12} sm={6} md={2.4}>
-            <Card className="glass-panel" sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase' }}>
+            <Card className="glass-panel" sx={{ p: 2.2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 122 }}>
+              <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: '0.72rem', height: 20, display: 'flex', alignItems: 'center' }}>
                 Active Workforce
               </Typography>
-              <Typography variant="h5" className="num-font" sx={{ fontWeight: 800, mt: 0.5, color: '#f8fafc' }}>
+              <Typography variant="h5" className="num-font" sx={{ fontWeight: 800, my: 0.5, color: '#f8fafc', fontSize: { xs: '1.25rem', md: '1.45rem' } }}>
                 {overview?.metrics?.total_headcount ? Number(overview.metrics.total_headcount).toLocaleString('en-IN') : '10,000'}
               </Typography>
-              <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 0.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7, height: 20 }}>
                 <span className="live-pulse" />
-                <Typography variant="caption" sx={{ color: '#34d399', fontWeight: 600 }}>
+                <Typography variant="caption" sx={{ color: '#34d399', fontWeight: 600, fontSize: '0.74rem' }}>
                   100% Payroll Active
                 </Typography>
-              </Stack>
+              </Box>
             </Card>
           </Grid>
 
           <Grid item xs={12} sm={6} md={2.4}>
-            <Card className="glass-panel" sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase' }}>
+            <Card className="glass-panel" sx={{ p: 2.2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 122 }}>
+              <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: '0.72rem', height: 20, display: 'flex', alignItems: 'center' }}>
                 Monthly Wage Bill
               </Typography>
-              <Typography variant="h5" className="num-font glow-cyan" sx={{ fontWeight: 800, mt: 0.5, color: '#38bdf8' }}>
-                {overview?.metrics?.monthly_wage_bill ? formatLakhsCrores(overview.metrics.monthly_wage_bill) : '₹74.50 Cr'}
+              <Typography variant="h5" className="num-font glow-cyan" sx={{ fontWeight: 800, my: 0.5, color: '#38bdf8', fontSize: { xs: '1.25rem', md: '1.45rem' } }}>
+                {overview?.metrics?.monthly_wage_bill ? formatLakhsCrores(overview.metrics.monthly_wage_bill) : '₹712.10 Cr'}
               </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Disbursed on 1st of month
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', height: 20 }}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.74rem' }}>
+                  Disbursed on 1st of month
+                </Typography>
+              </Box>
             </Card>
           </Grid>
 
           <Grid item xs={12} sm={6} md={2.4}>
-            <Card className="glass-panel" sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase' }}>
+            <Card className="glass-panel" sx={{ p: 2.2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 122 }}>
+              <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: '0.72rem', height: 20, display: 'flex', alignItems: 'center' }}>
                 Annual CTC Liability
               </Typography>
-              <Typography variant="h5" className="num-font" sx={{ fontWeight: 800, mt: 0.5, color: '#c084fc' }}>
-                {overview?.metrics?.annual_wage_bill ? formatLakhsCrores(overview.metrics.annual_wage_bill) : '₹894.00 Cr'}
+              <Typography variant="h5" className="num-font" sx={{ fontWeight: 800, my: 0.5, color: '#c084fc', fontSize: { xs: '1.25rem', md: '1.45rem' } }}>
+                {overview?.metrics?.annual_wage_bill ? formatLakhsCrores(overview.metrics.annual_wage_bill) : '₹8545.21 Cr'}
               </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Cost to Company (Gross + Retirals)
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', height: 20 }}>
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.74rem' }}>
+                  Gross + Employer Retirals
+                </Typography>
+              </Box>
             </Card>
           </Grid>
 
           <Grid item xs={12} sm={6} md={2.4}>
-            <Card className="glass-panel" sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase' }}>
+            <Card className="glass-panel" sx={{ p: 2.2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 122 }}>
+              <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: '0.72rem', height: 20, display: 'flex', alignItems: 'center' }}>
                 Gratuity Reserve Fund
               </Typography>
-              <Typography variant="h5" className="num-font glow-emerald" sx={{ fontWeight: 800, mt: 0.5, color: '#10b981' }}>
-                {overview?.metrics?.gratuity_reserve_liability ? formatLakhsCrores(overview.metrics.gratuity_reserve_liability) : '₹21.50 Cr'}
+              <Typography variant="h5" className="num-font glow-emerald" sx={{ fontWeight: 800, my: 0.5, color: '#10b981', fontSize: { xs: '1.25rem', md: '1.45rem' } }}>
+                {overview?.metrics?.gratuity_reserve_liability ? formatLakhsCrores(overview.metrics.gratuity_reserve_liability) : '₹205.41 Cr'}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#34d399' }}>
-                Sec 4(2) Gratuity Act 1972
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', height: 20 }}>
+                <Typography variant="caption" sx={{ color: '#34d399', fontSize: '0.74rem' }}>
+                  Sec 4(2) Gratuity Act 1972
+                </Typography>
+              </Box>
             </Card>
           </Grid>
 
           <Grid item xs={12} sm={6} md={2.4}>
-            <Card className="glass-panel" sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase' }}>
+            <Card className="glass-panel" sx={{ p: 2.2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: 122 }}>
+              <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, fontSize: '0.72rem', height: 20, display: 'flex', alignItems: 'center' }}>
                 Statutory Compliance
               </Typography>
-              <Typography variant="h5" className="num-font" sx={{ fontWeight: 800, mt: 0.5, color: '#fbbf24' }}>
+              <Typography variant="h5" className="num-font" sx={{ fontWeight: 800, my: 0.5, color: '#fbbf24', fontSize: { xs: '1.25rem', md: '1.45rem' } }}>
                 100.0%
               </Typography>
-              <Typography variant="caption" sx={{ color: '#fbbf24' }}>
-                EPFO • ESIC • PT • Form 24Q
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', height: 20 }}>
+                <Typography variant="caption" sx={{ color: '#fbbf24', fontSize: '0.74rem' }}>
+                  EPFO • ESIC • PT • Form 24Q
+                </Typography>
+              </Box>
             </Card>
           </Grid>
         </Grid>
 
         {/* Executive Tab Selector Navigation */}
-        <Box sx={{ mb: 3.5, display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+        <Box
+          sx={{
+            mb: 3.5,
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(5, 1fr)' },
+            gap: 1.5,
+            width: '100%',
+          }}
+        >
           <button
             className={`executive-tab-btn ${activeTab === 'tax' ? 'active' : ''}`}
             onClick={() => setActiveTab('tax')}
           >
             <BalanceIcon fontSize="small" />
-            1. Form 16 & Tax Regime Optimizer
+            1. Form 16 Tax Optimizer
           </button>
           <button
             className={`executive-tab-btn ${activeTab === 'fnf' ? 'active' : ''}`}
@@ -337,28 +394,28 @@ export default function HrSuitePage() {
             }}
           >
             <FactCheckIcon fontSize="small" />
-            2. Full & Final (F&F) & Gratuity Desk
+            2. F&F & Gratuity Desk
           </button>
           <button
             className={`executive-tab-btn ${activeTab === 'ctc' ? 'active' : ''}`}
             onClick={() => setActiveTab('ctc')}
           >
             <AccountBalanceIcon fontSize="small" />
-            3. Executive CTC & Retiral Architecture
+            3. Executive CTC & Retirals
           </button>
           <button
             className={`executive-tab-btn ${activeTab === 'appraisal' ? 'active' : ''}`}
             onClick={() => setActiveTab('appraisal')}
           >
             <TrendingUpIcon fontSize="small" />
-            4. Merit Cycle & Bell-Curve Manager
+            4. Merit Cycle & Bell Curve
           </button>
           <button
             className={`executive-tab-btn ${activeTab === 'compliance' ? 'active' : ''}`}
             onClick={() => setActiveTab('compliance')}
           >
             <ShieldIcon fontSize="small" />
-            5. Statutory Compliance Audit Radar
+            5. Statutory Compliance Radar
           </button>
         </Box>
 

@@ -49,9 +49,32 @@ export default function Navbar() {
     }
   }
 
+  const displayName = user?.full_name ? user.full_name.replace(/\s*\([^)]*\)/g, '').trim() : (user?.email || 'User')
+
+  const getNavBtnStyle = (pathPrefix) => {
+    const isActive = location.pathname.startsWith(pathPrefix)
+    return {
+      textTransform: 'none',
+      fontWeight: isActive ? 700 : 500,
+      fontSize: '0.84rem',
+      borderRadius: '8px',
+      px: 1.6,
+      py: 0.6,
+      color: isActive ? '#38bdf8' : '#94a3b8',
+      bgcolor: isActive ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+      border: isActive ? '1px solid rgba(56, 189, 248, 0.35)' : '1px solid transparent',
+      boxShadow: isActive ? '0 0 12px rgba(56, 189, 248, 0.15)' : 'none',
+      transition: 'all 0.2s ease',
+      '&:hover': {
+        bgcolor: isActive ? 'rgba(56, 189, 248, 0.18)' : 'rgba(255, 255, 255, 0.05)',
+        color: '#f8fafc',
+      },
+    }
+  }
+
   return (
-    <AppBar position="sticky" sx={{ bgcolor: 'rgba(8, 12, 20, 0.95)', backdropFilter: 'blur(16px)', borderBottom: '1px solid #1e293b', boxShadow: 'none', zIndex: 1100 }}>
-      <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 4 }, py: 0.5 }}>
+    <AppBar position="sticky" sx={{ bgcolor: 'rgba(6, 10, 18, 0.96)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #1a253c', boxShadow: '0 4px 20px rgba(0,0,0,0.4)', zIndex: 1100 }}>
+      <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 3 }, minHeight: 64 }}>
         <Stack direction="row" spacing={3} alignItems="center">
           <Typography
             variant="h6"
@@ -67,70 +90,65 @@ export default function Navbar() {
               display: 'flex',
               alignItems: 'center',
               gap: 1,
+              fontSize: '1.1rem',
             }}
           >
             <CurrencyRupeeIcon sx={{ color: '#38bdf8' }} />
             ACME PAYROLL
           </Typography>
 
-          <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Stack direction="row" spacing={0.8} sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               component={RouterLink}
               to="/employees"
-              startIcon={<PeopleIcon />}
-              variant={location.pathname.startsWith('/employees') ? 'contained' : 'text'}
+              startIcon={<PeopleIcon fontSize="small" />}
               size="small"
-              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
+              sx={getNavBtnStyle('/employees')}
             >
               Employees
             </Button>
             <Button
               component={RouterLink}
               to="/payslips"
-              startIcon={<ReceiptLongIcon />}
-              variant={location.pathname.startsWith('/payslips') ? 'contained' : 'text'}
+              startIcon={<ReceiptLongIcon fontSize="small" />}
               size="small"
-              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
+              sx={getNavBtnStyle('/payslips')}
             >
               Payslips & Payroll
             </Button>
             <Button
               component={RouterLink}
               to="/hr-suite"
-              startIcon={<AccountBalanceIcon sx={{ color: '#38bdf8' }} />}
-              variant={location.pathname.startsWith('/hr-suite') ? 'contained' : 'text'}
+              startIcon={<AccountBalanceIcon fontSize="small" sx={{ color: '#38bdf8' }} />}
               size="small"
-              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
+              sx={getNavBtnStyle('/hr-suite')}
             >
               HR Executive Suite
             </Button>
             <Button
               component={RouterLink}
               to="/analytics"
-              startIcon={<AssessmentIcon />}
-              variant={location.pathname === '/analytics' ? 'contained' : 'text'}
+              startIcon={<AssessmentIcon fontSize="small" />}
               size="small"
-              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
+              sx={getNavBtnStyle('/analytics')}
             >
               Analytics (₹)
             </Button>
             <Button
               component={RouterLink}
               to="/ai-advisor"
-              startIcon={<AutoAwesomeIcon sx={{ color: '#f59e0b' }} />}
-              variant={location.pathname === '/ai-advisor' ? 'contained' : 'text'}
+              startIcon={<AutoAwesomeIcon fontSize="small" sx={{ color: '#f59e0b' }} />}
               size="small"
-              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
+              sx={getNavBtnStyle('/ai-advisor')}
             >
               AI Advisor
             </Button>
             <Button
               component={RouterLink}
               to="/health"
-              startIcon={<HealthAndSafetyIcon />}
-              variant={location.pathname === '/health' ? 'contained' : 'text'}
+              startIcon={<HealthAndSafetyIcon fontSize="small" />}
               size="small"
-              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
+              sx={getNavBtnStyle('/health')}
             >
               Health
             </Button>
@@ -140,15 +158,15 @@ export default function Navbar() {
         <Stack direction="row" spacing={2} alignItems="center">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <span className="live-pulse" title="System Operational" />
-            <AccountCircleIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, color: 'text.secondary', fontWeight: 500 }}>
-              {user?.full_name || user?.email}
+            <AccountCircleIcon fontSize="small" sx={{ color: '#94a3b8' }} />
+            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, color: '#f8fafc', fontWeight: 600, fontSize: '0.85rem' }}>
+              {displayName}
             </Typography>
             <Chip
               label={formatRole(user?.role)}
               color={getRoleColor(user?.role)}
               size="small"
-              sx={{ fontWeight: 700, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 0.5 }}
+              sx={{ fontWeight: 800, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 0.5, height: 22 }}
             />
           </Box>
 
@@ -156,9 +174,9 @@ export default function Navbar() {
             variant="outlined"
             color="error"
             size="small"
-            startIcon={<LogoutIcon />}
+            startIcon={<LogoutIcon fontSize="small" />}
             onClick={handleLogout}
-            sx={{ textTransform: 'none', fontSize: '0.8rem', borderRadius: 2, borderColor: '#ef4444' }}
+            sx={{ textTransform: 'none', fontSize: '0.8rem', borderRadius: '8px', borderColor: 'rgba(239, 68, 68, 0.5)', px: 1.5, py: 0.4 }}
           >
             Logout
           </Button>

@@ -447,6 +447,24 @@ describe('App Routing & Authentication Flow', () => {
           },
         })
       }
+      if (url === '/api/v1/hr_suite/calculate_fnf') {
+        return Promise.resolve({
+          data: {
+            employee_info: { name: 'Aarav Patel', monthly_gross: 85000 },
+            settlement: {
+              settlement_summary: { net_payable: 228623.08, status: 'PAYABLE_TO_EMPLOYEE', total_earnings: 235123.08, total_deductions: 6500 },
+              earnings_breakdown: {
+                unpaid_days: 12,
+                earned_salary_for_unpaid_days: 34000,
+                gratuity: { payable_amount: 171634.62, tenure_years: 7.38, is_vested: true },
+                leave_encashment: { leave_days: 18, gross_leave_encashment: 25500, daily_basic_rate: 1416.67 },
+                statutory_bonus_accrual: 21240,
+              },
+              deductions_breakdown: { notice_shortfall_days: 0, notice_recovery_amount: 0, asset_deductions: 0, tds_deduction: 6500 },
+            },
+          },
+        })
+      }
       return Promise.reject(new Error('not found'))
     })
 
@@ -456,7 +474,7 @@ describe('App Routing & Authentication Flow', () => {
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /HR Executive & Total Rewards Suite/i })).toBeInTheDocument()
       expect(screen.getByText(/DIRECTOR TIER/i)).toBeInTheDocument()
-      expect(screen.getByText(/1. Form 16 & Tax Regime Optimizer/i)).toBeInTheDocument()
+      expect(screen.getByText(/1. Form 16 Tax Optimizer/i)).toBeInTheDocument()
     })
   })
 })

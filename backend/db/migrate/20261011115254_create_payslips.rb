@@ -35,7 +35,7 @@ class CreatePayslips < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :payslips, [:employee_id, :payroll_month], unique: true, name: "idx_payslips_emp_month"
+    add_index :payslips, [ :employee_id, :payroll_month ], unique: true, name: "idx_payslips_emp_month"
     add_index :payslips, :payroll_month
     add_index :payslips, :status
   end

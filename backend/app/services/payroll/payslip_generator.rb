@@ -24,13 +24,13 @@ module Payroll
       raw_amount = active_record.amount.to_f
       annual_inr_ctc = if active_record.currency == "INR" || raw_amount >= 300_000
                          raw_amount
-                       else
+      else
                          (raw_amount * USD_TO_INR_RATE).round(2)
-                       end
+      end
 
       # Determine if Diwali bonus applies (either requested or month is October "YYYY-10" / November "YYYY-11")
       month_num = @payroll_month.split("-").last.to_i
-      festive_month = @include_diwali_bonus || [10, 11].include?(month_num)
+      festive_month = @include_diwali_bonus || [ 10, 11 ].include?(month_num)
 
       bonus_result = DiwaliBonusService.calculate_bonus(
         annual_inr_ctc,

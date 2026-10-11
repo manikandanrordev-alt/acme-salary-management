@@ -10,6 +10,7 @@ erDiagram
     DEPARTMENT ||--o{ EMPLOYEE : "has"
     EMPLOYEE ||--o{ SALARY_RECORD : "holds"
     EMPLOYEE ||--o{ SALARY_AUDIT_LOG : "audited in"
+    EMPLOYEE ||--o{ PAYSLIP : "receives"
     SALARY_RECORD ||--o{ SALARY_AUDIT_LOG : "tracks"
 
     USER {
@@ -75,6 +76,26 @@ erDiagram
         string change_reason
         string ip_address
         string user_agent
+        datetime created_at
+    }
+
+    PAYSLIP {
+        bigint id PK
+        bigint employee_id FK
+        string payroll_month
+        decimal gross_salary_inr
+        decimal basic_salary_inr
+        decimal hra_inr
+        decimal special_allowance_inr
+        decimal diwali_bonus_inr
+        decimal epf_deduction_inr
+        decimal professional_tax_inr
+        decimal tds_tax_inr
+        decimal lop_deduction_inr
+        decimal total_deductions_inr
+        decimal net_pay_inr
+        string status
+        datetime emailed_at
         datetime created_at
     }
 ```

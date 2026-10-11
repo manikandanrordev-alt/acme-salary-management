@@ -21,11 +21,11 @@ module Payroll
     end
 
     def initialize(annual_gross_salary)
-      @annual_gross = [annual_gross_salary.to_f, 0.0].max
+      @annual_gross = [ annual_gross_salary.to_f, 0.0 ].max
     end
 
     def calculate
-      taxable_income = [@annual_gross - STANDARD_DEDUCTION, 0.0].max
+      taxable_income = [ @annual_gross - STANDARD_DEDUCTION, 0.0 ].max
 
       if taxable_income <= REBATE_87A_LIMIT
         return {
@@ -72,9 +72,9 @@ module Payroll
 
         taxable_in_slab = if taxable_income > current_slab_limit
                             current_slab_limit - previous_limit
-                          else
+        else
                             taxable_income - previous_limit
-                          end
+        end
 
         tax += (taxable_in_slab * rate)
         previous_limit = current_slab_limit

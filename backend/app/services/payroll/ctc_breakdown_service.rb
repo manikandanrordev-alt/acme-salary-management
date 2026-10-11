@@ -50,7 +50,7 @@ module Payroll
       # G * (12 + 1.0086 + 6 * (bonus_percent/100)) = CTC - INSURANCE_ANNUAL
 
       effective_multiplier = 12.0 + (12.0 * 0.5 * 0.12) + (12.0 * 0.5 * (15.0 / (26.0 * 12.0))) + (12.0 * 0.5 * (@bonus_percent / 100.0))
-      net_ctc_pool = [@annual_ctc - INSURANCE_ANNUAL, 0.0].max
+      net_ctc_pool = [ @annual_ctc - INSURANCE_ANNUAL, 0.0 ].max
       monthly_gross = (net_ctc_pool / effective_multiplier).round(2)
       annual_gross = (monthly_gross * 12.0).round(2)
 
@@ -64,11 +64,11 @@ module Payroll
       monthly_lta = (monthly_basic * 0.05).round(2)
       annual_lta = (monthly_lta * 12.0).round(2)
 
-      monthly_special = [monthly_gross - (monthly_basic + monthly_hra + monthly_conveyance + monthly_lta), 0.0].max.round(2)
+      monthly_special = [ monthly_gross - (monthly_basic + monthly_hra + monthly_conveyance + monthly_lta), 0.0 ].max.round(2)
       annual_special = (monthly_special * 12.0).round(2)
 
       # Component B: Employer Retirals & Benefits
-      monthly_employer_pf = @pf_statutory_cap ? [monthly_basic * 0.12, 1800.0].min.round(2) : (monthly_basic * 0.12).round(2)
+      monthly_employer_pf = @pf_statutory_cap ? [ monthly_basic * 0.12, 1800.0 ].min.round(2) : (monthly_basic * 0.12).round(2)
       annual_employer_pf = (monthly_employer_pf * 12.0).round(2)
 
       monthly_gratuity_accrual = ((15.0 / (26.0 * 12.0)) * monthly_basic).round(2)
