@@ -26,6 +26,23 @@ Rails.application.routes.draw do
       end
 
       get "analytics/summary", to: "analytics#summary"
+
+      resources :payslips, only: [ :index, :show ] do
+        collection do
+          post :generate_batch
+          post :send_batch_emails
+        end
+        member do
+          post :send_email
+        end
+      end
+
+      scope :ai, controller: :ai_advisor do
+        get :summary
+        get :attrition_risk
+        get :anomalies
+        post :salary_recommendation
+      end
     end
   end
 end

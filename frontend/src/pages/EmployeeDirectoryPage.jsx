@@ -151,11 +151,12 @@ export default function EmployeeDirectoryPage() {
   const formatCurrency = (amount, currency) => {
     if (!amount) return 'N/A'
     const num = Number(amount)
-    return new Intl.NumberFormat('en-US', {
+    const inrAmount = currency === 'INR' || num >= 300000 ? num : num * 85
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: currency || 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0,
-    }).format(num)
+    }).format(inrAmount)
   }
 
   const getStatusChip = (status) => {

@@ -2,6 +2,7 @@ class Employee < ApplicationRecord
   belongs_to :department
   has_many :salary_records, -> { order(effective_from: :asc) }, dependent: :destroy, inverse_of: :employee
   has_many :salary_audit_logs, dependent: :restrict_with_error
+  has_many :payslips, dependent: :destroy
 
   STATUSES = %w[active on_leave terminated].freeze
 

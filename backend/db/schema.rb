@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_11_092302) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_11_115254) do
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
@@ -38,6 +38,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_092302) do
     t.index ["email"], name: "index_employees_on_email", unique: true
     t.index ["employee_code"], name: "index_employees_on_employee_code", unique: true
     t.index ["last_name", "first_name"], name: "idx_emp_name_search"
+  end
+
+  create_table "payslips", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "employee_id", null: false
+    t.string "payroll_month", limit: 7, null: false
+    t.string "financial_year", default: "2024-2025", null: false
+    t.decimal "basic_pay", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "hra", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "special_allowance", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "diwali_bonus", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "gross_earnings", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "epf_deduction", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "pt_deduction", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "tds_tax_deduction", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "lop_deduction", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "total_deductions", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "net_pay", precision: 12, scale: 2, default: "0.0", null: false
+    t.integer "working_days", default: 30, null: false
+    t.integer "paid_leaves", default: 0, null: false
+    t.integer "lop_days", default: 0, null: false
+    t.string "status", default: "generated", null: false
+    t.string "email_recipient"
+    t.datetime "emailed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id", "payroll_month"], name: "idx_payslips_emp_month", unique: true
+    t.index ["employee_id"], name: "index_payslips_on_employee_id"
+    t.index ["payroll_month"], name: "index_payslips_on_payroll_month"
+    t.index ["status"], name: "index_payslips_on_status"
   end
 
   create_table "salary_audit_logs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -92,6 +121,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_092302) do
   end
 
   add_foreign_key "employees", "departments"
+  add_foreign_key "payslips", "employees", on_delete: :cascade
   add_foreign_key "salary_audit_logs", "employees"
   add_foreign_key "salary_audit_logs", "salary_records", on_delete: :nullify
   add_foreign_key "salary_audit_logs", "users"

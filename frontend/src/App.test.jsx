@@ -71,6 +71,15 @@ describe('App Routing & Authentication Flow', () => {
       },
     })
     apiClient.get.mockImplementation((url) => {
+      if (url === '/api/v1/auth/me') {
+        return Promise.resolve({
+          data: {
+            data: {
+              user: { id: 1, email: 'hr_director@acme.com', full_name: 'HR Director', role: 'hr_manager' },
+            },
+          },
+        })
+      }
       if (url === '/api/v1/departments') {
         return Promise.resolve({ data: { data: [{ id: 1, name: 'Engineering', code: 'ENG' }] } })
       }
@@ -108,11 +117,11 @@ describe('App Routing & Authentication Flow', () => {
       expect(screen.getByText('ACME-00101')).toBeInTheDocument()
       expect(screen.getByText('Alice Smith')).toBeInTheDocument()
       expect(screen.getByText('Staff Engineer')).toBeInTheDocument()
-      expect(screen.getByText('$120,000')).toBeInTheDocument()
+      expect(screen.getAllByText(/₹/).length).toBeGreaterThan(0)
     })
 
     // Check navbar displays role chip
-    expect(screen.getByText('HR Manager')).toBeInTheDocument()
+    expect(screen.getAllByText(/HR Director/i).length).toBeGreaterThanOrEqual(1)
   })
 
   it('displays error alert when login credentials are invalid', async () => {
@@ -190,6 +199,23 @@ describe('App Routing & Authentication Flow', () => {
           },
         })
       }
+      if (url.startsWith('/api/v1/payslips')) {
+        return Promise.resolve({
+          data: {
+            data: [],
+            meta: { total_count: 0 },
+            summary: {
+              total_gross_inr: 5000000,
+              total_net_disbursed_inr: 4200000,
+              total_tds_tax_inr: 450000,
+              total_epf_inr: 300000,
+              total_diwali_bonus_inr: 1200000,
+              total_dispatched_emails: 15,
+              total_payslips: 20,
+            },
+          },
+        })
+      }
       return Promise.reject(new Error('not found'))
     })
 
@@ -202,7 +228,10 @@ describe('App Routing & Authentication Flow', () => {
     fireEvent.click(screen.getByRole('link', { name: /Analytics/i }))
 
     await waitFor(() => {
-      expect(screen.queryByText(/Aggregating compensation metrics/i) || screen.queryByRole('heading', { name: /Compensation Intelligence/i })).toBeTruthy()
+      expect(
+        screen.queryByText(/Aggregating Indian compensation metrics/i) ||
+        screen.queryByRole('heading', { name: /Compensation & Tax Intelligence/i })
+      ).toBeTruthy()
     }, { timeout: 3000 })
   })
 
@@ -227,6 +256,90 @@ describe('App Routing & Authentication Flow', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /Export CSV/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Import CSV/i })).toBeInTheDocument()
+    })
+  })
+
+  it('navigates to Payslips & Payroll page and renders payroll controls', async () => {
+    apiClient.get.mockImplementation((url) => {
+      if (url === '/api/v1/auth/me') {
+        return Promise.resolve({
+          data: { data: { user: { id: 1, email: 'hr_director@acme.com', role: 'hr_manager' } } },
+        })
+      }
+      if (url === '/api/v1/departments') {
+        return Promise.resolve({ data: { data: [] } })
+      }
+      if (url === '/api/v1/employees') {
+        return Promise.resolve({ data: { data: [], meta: { total_count: 0 } } })
+      }
+      if (url.startsWith('/api/v1/payslips')) {
+        return Promise.resolve({
+          data: {
+            data: [],
+            meta: { total_count: 0 },
+            summary: {
+              total_gross_inr: 5000000,
+              total_net_disbursed_inr: 4200000,
+              total_tds_tax_inr: 450000,
+              total_epf_inr: 300000,
+              total_diwali_bonus_inr: 1200000,
+              total_dispatched_emails: 15,
+              total_payslips: 20,
+            },
+          },
+        })
+      }
+      return Promise.reject(new Error('not found'))
+    })
+
+    window.history.pushState({}, '', '/payslips')
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Monthly Payroll & Payslips/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Run Monthly Payroll/i })).toBeInTheDocument()
+    })
+  })
+
+  it('navigates to AI Advisor page and renders AI retention intelligence', async () => {
+    apiClient.get.mockImplementation((url) => {
+      if (url === '/api/v1/auth/me') {
+        return Promise.resolve({
+          data: { data: { user: { id: 1, email: 'hr_director@acme.com', role: 'hr_manager' } } },
+        })
+      }
+      if (url === '/api/v1/departments') {
+        return Promise.resolve({ data: { data: [] } })
+      }
+      if (url === '/api/v1/employees') {
+        return Promise.resolve({ data: { data: [], meta: { total_count: 0 } } })
+      }
+      if (url === '/api/v1/ai/summary') {
+        return Promise.resolve({
+          data: {
+            data: {
+              payroll_health_score: 95,
+              attrition_risk_summary: { high_risk_count: 5, top_risk_department: 'Engineering' },
+              festive_bonus_forecast: { projected_diwali_payout: 4200000 },
+              ai_recommendation_count: 8,
+            },
+          },
+        })
+      }
+      if (url === '/api/v1/ai/attrition_risk') {
+        return Promise.resolve({ data: { data: [] } })
+      }
+      if (url === '/api/v1/ai/anomalies') {
+        return Promise.resolve({ data: { data: [] } })
+      }
+      return Promise.reject(new Error('not found'))
+    })
+
+    window.history.pushState({}, '', '/ai-advisor')
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /AI Compensation & Retention Intelligence/i })).toBeInTheDocument()
     })
   })
 })

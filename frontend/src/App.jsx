@@ -7,6 +7,8 @@ import LoginPage from './pages/LoginPage'
 import EmployeeDirectoryPage from './pages/EmployeeDirectoryPage'
 import EmployeeDetailPage from './pages/EmployeeDetailPage'
 import AnalyticsPage from './pages/AnalyticsPage'
+import PayslipsPage from './pages/PayslipsPage'
+import AiAdvisorPage from './pages/AiAdvisorPage'
 import HealthPage from './pages/HealthPage'
 
 const darkTheme = createTheme({
@@ -19,8 +21,8 @@ const darkTheme = createTheme({
       main: '#34d399',
     },
     background: {
-      default: '#0b0f19',
-      paper: '#111827',
+      default: '#080c14',
+      paper: '#0f172a',
     },
   },
   typography: {
@@ -44,7 +46,9 @@ export default function App() {
                   <Route path="/" element={<Navigate to="/employees" replace />} />
                   <Route path="/employees" element={<EmployeeDirectoryPage />} />
                   <Route path="/employees/:id" element={<EmployeeDetailPage />} />
+                  <Route path="/payslips" element={<PayslipsPage />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
+                  <Route path="/ai-advisor" element={<AiAdvisorPage />} />
                   <Route path="/health" element={<HealthPage />} />
                 </Route>
 

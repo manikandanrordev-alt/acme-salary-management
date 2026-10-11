@@ -1,0 +1,25 @@
+ACME ENTERPRISE TECHNOLOGIES INDIA PVT. LTD.
+Official Monthly Salary Payslip for <%= @payslip.payroll_month %>
+
+Employee: <%= @employee.full_name %> (<%= @employee.employee_code %>)
+Department: <%= @employee.department&.name %>
+Pay Period: <%= @payroll_month %>
+
+EARNINGS:
+- Basic Salary: ₹<%= sprintf('%.2f', @payslip.basic_pay) %>
+- HRA: ₹<%= sprintf('%.2f', @payslip.hra) %>
+- Special Allowance: ₹<%= sprintf('%.2f', @payslip.special_allowance) %>
+<% if @payslip.diwali_bonus > 0 %>
+- Diwali Bonus: ₹<%= sprintf('%.2f', @payslip.diwali_bonus) %>
+<% end %>
+Total Gross Earnings: ₹<%= sprintf('%.2f', @payslip.gross_earnings) %>
+
+DEDUCTIONS:
+- Provident Fund (EPF 12%): ₹<%= sprintf('%.2f', @payslip.epf_deduction) %>
+- Professional Tax (PT): ₹<%= sprintf('%.2f', @payslip.pt_deduction) %>
+- Income Tax (TDS): ₹<%= sprintf('%.2f', @payslip.tds_tax_deduction) %>
+- Loss of Pay (LOP): ₹<%= sprintf('%.2f', @payslip.lop_deduction) %>
+Total Deductions: ₹<%= sprintf('%.2f', @payslip.total_deductions) %>
+
+NET PAYABLE SALARY: ₹<%= sprintf('%.2f', @payslip.net_pay) %>
+Amount in words: <%= @payslip.net_pay_in_words %>

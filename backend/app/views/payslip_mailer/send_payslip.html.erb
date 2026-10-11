@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; color: #111827; }
+    .container { max-width: 650px; margin: 0 auto; background: #ffffff; border-radius: 8px; border: 1px solid #e5e7eb; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .header { border-bottom: 2px solid #2563eb; padding-bottom: 16px; margin-bottom: 24px; }
+    .company { font-size: 20px; font-weight: 800; color: #1e3a8a; letter-spacing: 0.5px; }
+    .title { font-size: 16px; font-weight: 600; color: #4b5563; margin-top: 4px; }
+    .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+    .meta-table td { padding: 6px 0; }
+    .breakdown { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+    .breakdown th { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; font-weight: 700; color: #334155; }
+    .breakdown td { border: 1px solid #e2e8f0; padding: 8px 12px; }
+    .amount { text-align: right; font-family: monospace; font-weight: 600; }
+    .net-box { background: #ecfdf5; border: 1px solid #10b981; border-radius: 6px; padding: 16px; text-align: center; margin-bottom: 24px; }
+    .net-label { font-size: 12px; color: #047857; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .net-amount { font-size: 26px; font-weight: 800; color: #065f46; margin: 6px 0; }
+    .net-words { font-size: 12px; color: #047857; font-style: italic; }
+    .footer { font-size: 11px; color: #6b7280; text-align: center; border-top: 1px solid #e5e7eb; padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="company">ACME ENTERPRISE TECHNOLOGIES INDIA PVT. LTD.</div>
+      <div class="title">Official Monthly Salary Payslip &mdash; <%= @payslip.payroll_month %></div>
+    </div>
+
+    <table class="meta-table">
+      <tr>
+        <td><strong>Employee Name:</strong> <%= @employee.full_name %></td>
+        <td><strong>Employee Code:</strong> <%= @employee.employee_code %></td>
+      </tr>
+      <tr>
+        <td><strong>Email:</strong> <%= @employee.email %></td>
+        <td><strong>Department:</strong> <%= @employee.department&.name %> (<%= @employee.department&.code %>)</td>
+      </tr>
+      <tr>
+        <td><strong>Pay Period:</strong> <%= @payslip.payroll_month %> (FY <%= @payslip.financial_year %>)</td>
+        <td><strong>Days Worked:</strong> <%= @payslip.working_days %> Days (LOP: <%= @payslip.lop_days %>)</td>
+      </tr>
+    </table>
+
+    <table class="breakdown">
+      <thead>
+        <tr>
+          <th>Earnings (Credit)</th>
+          <th class="amount">Amount (₹)</th>
+          <th>Deductions (Debit)</th>
+          <th class="amount">Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Basic Salary (50%)</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.basic_pay) %></td>
+          <td>Provident Fund (EPF 12%)</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.epf_deduction) %></td>
+        </tr>
+        <tr>
+          <td>House Rent Allowance (HRA)</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.hra) %></td>
+          <td>Professional Tax (PT)</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.pt_deduction) %></td>
+        </tr>
+        <tr>
+          <td>Special Allowance</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.special_allowance) %></td>
+          <td>Income Tax (TDS - New Regime)</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.tds_tax_deduction) %></td>
+        </tr>
+        <% if @payslip.diwali_bonus > 0 %>
+        <tr>
+          <td><strong>Diwali Festival Bonus</strong></td>
+          <td class="amount"><strong>₹<%= sprintf('%.2f', @payslip.diwali_bonus) %></strong></td>
+          <td>Loss of Pay (LOP)</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.lop_deduction) %></td>
+        </tr>
+        <% else %>
+        <tr>
+          <td>-</td>
+          <td class="amount">-</td>
+          <td>Loss of Pay (LOP)</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.lop_deduction) %></td>
+        </tr>
+        <% end %>
+        <tr style="background: #f8fafc; font-weight: 700;">
+          <td>Total Gross Earnings</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.gross_earnings) %></td>
+          <td>Total Statutory Deductions</td>
+          <td class="amount">₹<%= sprintf('%.2f', @payslip.total_deductions) %></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="net-box">
+      <div class="net-label">Net Disbursed Take-Home Salary</div>
+      <div class="net-amount">₹<%= sprintf('%.2f', @payslip.net_pay) %></div>
+      <div class="net-words"><%= @payslip.net_pay_in_words %></div>
+    </div>
+
+    <div class="footer">
+      This is a computer-generated official document. Income tax calculated under Indian Government New Tax Regime. ACME Enterprise HR & Payroll Division.
+    </div>
+  </div>
+</body>
+</html>
