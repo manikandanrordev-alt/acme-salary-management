@@ -60,7 +60,7 @@ acme-salary-management/
 | **Milestone 4** | **Completed** | Employee directory endpoints with server-side pagination, sorting, and search. |
 | **Milestone 5** | **Completed** | Effective-dated salary revisions and transactional audit logging. |
 | **Milestone 6** | **Completed** | Material UI frontend dashboard, directory table, and salary revision modal. |
-| **Milestone 7** | *Queued* | Compensation analytics engine and currency-safe summary cards. |
+| **Milestone 7** | **Completed** | Compensation analytics engine and currency-safe summary cards. |
 | **Milestone 8** | *Queued* | Authorized CSV export and validated import workflows. |
 | **Milestone 9** | *Queued* | Quality audit, full test suites, RuboCop/ESLint checks, and index optimization. |
 | **Milestone 10** | *Queued* | Production deployment readiness, Docker configurations, and CI verification. |

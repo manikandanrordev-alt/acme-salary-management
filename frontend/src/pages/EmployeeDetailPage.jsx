@@ -248,7 +248,7 @@ export default function EmployeeDetailPage() {
 
         {/* Info Grid */}
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid xs={12} sm={6} md={3}>
             <Stack direction="row" spacing={1.5} alignItems="center">
               <PersonIcon color="action" />
               <Box>
@@ -261,7 +261,7 @@ export default function EmployeeDetailPage() {
               </Box>
             </Stack>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid xs={12} sm={6} md={3}>
             <Stack direction="row" spacing={1.5} alignItems="center">
               <PublicIcon color="action" />
               <Box>
@@ -274,7 +274,7 @@ export default function EmployeeDetailPage() {
               </Box>
             </Stack>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid xs={12} sm={6} md={3}>
             <Stack direction="row" spacing={1.5} alignItems="center">
               <CalendarTodayIcon color="action" />
               <Box>
@@ -287,7 +287,7 @@ export default function EmployeeDetailPage() {
               </Box>
             </Stack>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid xs={12} sm={6} md={3}>
             <Stack direction="row" spacing={1.5} alignItems="center">
               <BusinessIcon color="action" />
               <Box>
@@ -315,7 +315,7 @@ export default function EmployeeDetailPage() {
 
           {activeSalary ? (
             <Grid container spacing={3} alignItems="center">
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Paper sx={{ p: 2.5, bgcolor: '#064e3b', border: '1px solid #059669', borderRadius: 2 }}>
                   <Typography variant="caption" sx={{ color: '#a7f3d0', fontWeight: 600 }}>
                     CURRENT BASE SALARY
@@ -329,7 +329,7 @@ export default function EmployeeDetailPage() {
                 </Paper>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Box sx={{ p: 2, bgcolor: '#1f2937', borderRadius: 2 }}>
                   <Typography variant="caption" color="text.secondary">
                     EFFECTIVE PERIOD
@@ -343,7 +343,7 @@ export default function EmployeeDetailPage() {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Box sx={{ p: 2, bgcolor: '#1f2937', borderRadius: 2 }}>
                   <Typography variant="caption" color="text.secondary">
                     CHANGE REASON
@@ -439,7 +439,7 @@ export default function EmployeeDetailPage() {
               />
 
               <Grid container spacing={2}>
-                <Grid item xs={6}>
+                <Grid xs={6}>
                   <TextField
                     select
                     fullWidth
@@ -454,7 +454,7 @@ export default function EmployeeDetailPage() {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid xs={6}>
                   <TextField
                     select
                     fullWidth

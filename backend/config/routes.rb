@@ -20,6 +20,8 @@ Rails.application.routes.draw do
       resources :employees, only: [ :index, :show ] do
         resources :salary_revisions, only: [ :create ]
       end
+
+      get "analytics/summary", to: "analytics#summary"
     end
   end
 end

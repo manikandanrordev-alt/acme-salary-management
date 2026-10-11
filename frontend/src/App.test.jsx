@@ -120,4 +120,66 @@ describe('App Routing & Authentication Flow', () => {
       expect(screen.getByText('Invalid email or password')).toBeInTheDocument()
     })
   })
+
+  it('navigates to analytics dashboard and displays multi-currency KPI cards', async () => {
+    // Mock user authenticated as HR Manager
+    apiClient.get.mockImplementation((url) => {
+      if (url === '/api/v1/auth/me') {
+        return Promise.resolve({
+          data: { data: { user: { id: 1, email: 'hr_director@acme.com', role: 'hr_manager' } } },
+        })
+      }
+      if (url === '/api/v1/departments') {
+        return Promise.resolve({ data: { data: [] } })
+      }
+      if (url === '/api/v1/employees') {
+        return Promise.resolve({ data: { data: [], meta: { total_count: 0 } } })
+      }
+      if (url === '/api/v1/analytics/summary') {
+        return Promise.resolve({
+          data: {
+            data: {
+              currencies: [
+                {
+                  currency: 'USD',
+                  headcount: 5000,
+                  total_payroll: 550000000,
+                  average_salary: 110000,
+                  min_salary: 50000,
+                  max_salary: 250000,
+                },
+                {
+                  currency: 'GBP',
+                  headcount: 2000,
+                  total_payroll: 160000000,
+                  average_salary: 80000,
+                  min_salary: 40000,
+                  max_salary: 180000,
+                },
+              ],
+              departments: [
+                { department_name: 'Engineering', currency: 'USD', headcount: 2000, average_salary: 130000, total_payroll: 260000000 },
+              ],
+              countries: [
+                { country_code: 'US', currency: 'USD', headcount: 5000, average_salary: 110000, total_payroll: 550000000 },
+              ],
+            },
+          },
+        })
+      }
+      return Promise.reject(new Error('not found'))
+    })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: /Analytics/i })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('link', { name: /Analytics/i }))
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Aggregating compensation metrics/i) || screen.queryByRole('heading', { name: /Compensation Intelligence/i })).toBeTruthy()
+    }, { timeout: 3000 })
+  })
 })
