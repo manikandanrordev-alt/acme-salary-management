@@ -1,40 +1,49 @@
 services:
-  # Rails 8 API Backend Service
+  # Backend Rails 8 API Web Service
   - type: web
     name: acme-salary-backend
-    runtime: docker
-    dockerContext: backend
-    dockerfilePath: backend/Dockerfile
-    plan: standard
+    env: docker
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    plan: free
+    region: oregon
     healthCheckPath: /api/v1/health
     envVars:
       - key: RAILS_ENV
         value: production
-      - key: RAILS_SERVE_STATIC_FILES
-        value: "true"
-      - key: RAILS_LOG_TO_STDOUT
-        value: "true"
+      - key: PORT
+        value: 3000
       - key: SECRET_KEY_BASE
         generateValue: true
       - key: DB_HOST
         sync: false
       - key: DB_PORT
-        value: "3306"
+        value: 4000
       - key: DB_USERNAME
         sync: false
       - key: DB_PASSWORD
         sync: false
       - key: DB_NAME
-        sync: false
+        value: test
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: acme-salary-frontend
+          property: url
 
-  # React Material UI Frontend Static Site
+  # Frontend Vite React Static Site
   - type: web
     name: acme-salary-frontend
-    runtime: static
+    env: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
+    plan: free
+    region: oregon
     routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://acme-salary-backend.onrender.com/api/*
       - type: rewrite
         source: /*
         destination: /index.html

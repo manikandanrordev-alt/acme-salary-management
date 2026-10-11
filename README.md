@@ -70,6 +70,7 @@ acme-salary-management/
 
 ## 5. Documentation Links
 
+- [100% Free Deployment Guide (Vercel + Render + TiDB / Tunnel)](docs/free-deployment-guide.md)
 - [Incubyte Assessment Evaluation & Architecture Report](docs/assessment-evaluation.md)
 - [Video Demonstration Walkthrough Script](docs/walkthrough-script.md)
 - [AI Usage & Pair Programming Reflection](docs/ai-usage-reflection.md)
