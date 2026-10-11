@@ -53,8 +53,8 @@ acme-salary-management/
 
 | Milestone | Status | Description |
 | :--- | :--- | :--- |
-| **Milestone 0** | **Completed (Pending Approval)** | Repository setup, PRD, architecture, data model, trade-offs, and implementation plan. |
-| **Milestone 1** | *Queued* | Rails API & React SPA initialization, MySQL config, health check, CI setup. |
+| **Milestone 0** | **Completed** | Repository setup, PRD, architecture, data model, trade-offs, and implementation plan. |
+| **Milestone 1** | **Completed (Pending Approval)** | Rails API & React SPA initialization, MySQL config, health check, CI setup. |
 | **Milestone 2** | *Queued* | Relational schema, models, constraints, and deterministic 10,000 synthetic employee seed data. |
 | **Milestone 3** | *Queued* | Devise cookie-based authentication, CSRF/CORS configuration, and authorization guards. |
 | **Milestone 4** | *Queued* | Employee directory endpoints with server-side pagination, sorting, and search. |
@@ -78,11 +78,60 @@ acme-salary-management/
 
 ---
 
-## 6. Development Prerequisites & Environment
+## 6. Verified Local Setup & Commands
 
-- **Ruby**: 4.0.6+
+### Prerequisites
+- **Ruby**: 4.0.6+ / 3.3+
 - **Rails**: 8.1.3+
 - **Node.js**: v20.19.5+
 - **npm**: 10.8.2+
-- **MySQL**: 8.0+
-- **Git**: 2.25+
+- **MySQL**: 8.0+ running on port 3306
+
+### Backend Setup & Tests
+```bash
+cd backend
+
+# Install dependencies
+bundle install
+
+# Setup databases
+bin/rails db:create db:migrate
+
+# Run RuboCop linter
+bundle exec rubocop app/ spec/ config/routes.rb config/initializers/cors.rb
+
+# Run backend RSpec tests
+bundle exec rspec
+
+# Start Rails API server (port 3000)
+bin/rails server -p 3000
+```
+
+### Frontend Setup & Tests
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Run oxlint linter
+npm run lint
+
+# Run Vitest test suite
+npm test
+
+# Build production assets
+npm run build
+
+# Start Vite dev server (port 5173 with proxy to port 3000)
+npm run dev
+```
+
+### Verify End-to-End Health Check
+```bash
+# Direct API check
+curl http://localhost:3000/api/v1/health
+
+# Via Vite proxy
+curl http://localhost:5173/api/v1/health
+```
