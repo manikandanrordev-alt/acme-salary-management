@@ -37,9 +37,9 @@ class CreateCoreSchema < ActiveRecord::Migration[8.1]
     end
     add_index :employees, :employee_code, unique: true
     add_index :employees, :email, unique: true
-    add_index :employees, [:department_id, :employment_status], name: "idx_emp_dept_status"
-    add_index :employees, [:country_code, :employment_status], name: "idx_emp_country_status"
-    add_index :employees, [:last_name, :first_name], name: "idx_emp_name_search"
+    add_index :employees, [ :department_id, :employment_status ], name: "idx_emp_dept_status"
+    add_index :employees, [ :country_code, :employment_status ], name: "idx_emp_country_status"
+    add_index :employees, [ :last_name, :first_name ], name: "idx_emp_name_search"
 
     # Salary Records (Effective-dated)
     create_table :salary_records do |t|
@@ -53,8 +53,8 @@ class CreateCoreSchema < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    add_index :salary_records, [:employee_id, :effective_from, :effective_to], name: "idx_salary_emp_dates"
-    add_index :salary_records, [:currency, :amount], name: "idx_salary_curr_amount"
+    add_index :salary_records, [ :employee_id, :effective_from, :effective_to ], name: "idx_salary_emp_dates"
+    add_index :salary_records, [ :currency, :amount ], name: "idx_salary_curr_amount"
 
     # Salary Audit Logs (Immutable audit trail)
     create_table :salary_audit_logs do |t|
@@ -75,7 +75,7 @@ class CreateCoreSchema < ActiveRecord::Migration[8.1]
       t.string :user_agent
       t.datetime :created_at, precision: 6, null: false
     end
-    add_index :salary_audit_logs, [:employee_id, :created_at], name: "idx_audit_emp_created"
-    add_index :salary_audit_logs, [:user_id, :created_at], name: "idx_audit_user_created"
+    add_index :salary_audit_logs, [ :employee_id, :created_at ], name: "idx_audit_emp_created"
+    add_index :salary_audit_logs, [ :user_id, :created_at ], name: "idx_audit_user_created"
   end
 end

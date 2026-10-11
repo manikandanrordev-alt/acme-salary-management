@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_11_083320) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_11_092302) do
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
@@ -75,6 +75,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_083320) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency", "amount"], name: "idx_salary_curr_amount"
+    t.index ["effective_to", "currency", "amount"], name: "idx_sal_active_currency_amount"
+    t.index ["effective_to"], name: "idx_sal_effective_to"
     t.index ["employee_id", "effective_from", "effective_to"], name: "idx_salary_emp_dates"
     t.index ["employee_id"], name: "index_salary_records_on_employee_id"
   end

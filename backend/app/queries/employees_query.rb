@@ -2,15 +2,6 @@ class EmployeesQuery
   DEFAULT_PER_PAGE = 25
   MAX_PER_PAGE = 100
 
-  ALLOWED_SORT_COLUMNS = {
-    "employee_code" => "employees.employee_code",
-    "name" => "employees.last_name",
-    "hire_date" => "employees.hire_date",
-    "department" => "departments.name",
-    "country_code" => "employees.country_code",
-    "employment_status" => "employees.employment_status"
-  }.freeze
-
   attr_reader :params, :relation
 
   def initialize(params = {}, relation = Employee.all)
@@ -48,13 +39,23 @@ class EmployeesQuery
 
   def apply_sorting(scope)
     sort_key = params[:sort_by].to_s.downcase
-    sort_column = ALLOWED_SORT_COLUMNS[sort_key] || "employees.id"
-    sort_direction = params[:sort_order].to_s.downcase == "desc" ? :desc : :asc
+    direction = params[:sort_order].to_s.downcase == "desc" ? :desc : :asc
 
-    if sort_key == "department"
-      scope.joins(:department).order(Arel.sql("#{sort_column} #{sort_direction.to_s.upcase}"))
+    case sort_key
+    when "name"
+      scope.order(last_name: direction, first_name: direction)
+    when "employee_code"
+      scope.order(employee_code: direction)
+    when "hire_date"
+      scope.order(hire_date: direction)
+    when "country_code"
+      scope.order(country_code: direction)
+    when "employment_status"
+      scope.order(employment_status: direction)
+    when "department"
+      scope.joins(:department).order("departments.name" => direction)
     else
-      scope.order(Arel.sql("#{sort_column} #{sort_direction.to_s.upcase}"))
+      scope.order(id: :asc)
     end
   end
 

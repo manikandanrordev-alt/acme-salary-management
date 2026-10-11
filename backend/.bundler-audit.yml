@@ -1,0 +1,8 @@
+---
+ignore:
+  # Confirmable is not enabled in User model (only database_authenticatable)
+  - CVE-2026-32700
+  - GHSA-57hq-95w6-v4fc
+  # Timeoutable is not enabled in User model
+  - CVE-2026-40295
+  - GHSA-jp94-3292-c3xv
