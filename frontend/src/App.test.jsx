@@ -8,6 +8,7 @@ vi.mock('./api/client')
 describe('App Routing & Authentication Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    window.history.pushState({}, '', '/')
   })
 
   it('redirects unauthenticated user to /login and displays login form', async () => {
@@ -181,5 +182,29 @@ describe('App Routing & Authentication Flow', () => {
     await waitFor(() => {
       expect(screen.queryByText(/Aggregating compensation metrics/i) || screen.queryByRole('heading', { name: /Compensation Intelligence/i })).toBeTruthy()
     }, { timeout: 3000 })
+  })
+
+  it('renders Export CSV and Import CSV action buttons on employee directory for HR user', async () => {
+    apiClient.get.mockImplementation((url) => {
+      if (url === '/api/v1/auth/me') {
+        return Promise.resolve({
+          data: { data: { user: { id: 1, email: 'hr_lead@acme.com', role: 'hr_manager' } } },
+        })
+      }
+      if (url === '/api/v1/departments') {
+        return Promise.resolve({ data: { data: [] } })
+      }
+      if (url === '/api/v1/employees') {
+        return Promise.resolve({ data: { data: [], meta: { total_count: 0 } } })
+      }
+      return Promise.reject(new Error('not found'))
+    })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Export CSV/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Import CSV/i })).toBeInTheDocument()
+    })
   })
 })

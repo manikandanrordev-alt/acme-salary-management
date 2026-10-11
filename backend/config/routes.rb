@@ -18,6 +18,10 @@ Rails.application.routes.draw do
       resources :departments, only: [ :index ]
 
       resources :employees, only: [ :index, :show ] do
+        collection do
+          get :export
+          post :import
+        end
         resources :salary_revisions, only: [ :create ]
       end
 

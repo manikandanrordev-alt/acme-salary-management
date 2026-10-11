@@ -29,7 +29,14 @@ import ClearIcon from '@mui/icons-material/Clear'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import FileUploadIcon from '@mui/icons-material/FileUpload'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
 import apiClient from '../api/client'
+import { useAuth } from '../context/AuthContext'
 
 const COUNTRIES = [
   { code: 'US', label: 'United States (US)' },
@@ -47,6 +54,7 @@ const STATUSES = [
 
 export default function EmployeeDirectoryPage() {
   const navigate = useNavigate()
+  const { isHrManager } = useAuth()
 
   // Data states
   const [employees, setEmployees] = useState([])
@@ -54,6 +62,13 @@ export default function EmployeeDirectoryPage() {
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // CSV Import/Export states
+  const [importOpen, setImportOpen] = useState(false)
+  const [importFile, setImportFile] = useState(null)
+  const [importing, setImporting] = useState(false)
+  const [importResult, setImportResult] = useState(null)
+  const [importError, setImportError] = useState(null)
 
   // Query states
   const [page, setPage] = useState(0)
@@ -156,6 +171,65 @@ export default function EmployeeDirectoryPage() {
     }
   }
 
+  const handleExportCsv = async () => {
+    try {
+      const params = {}
+      if (debouncedSearch) params.search = debouncedSearch
+      if (departmentId) params.department_id = departmentId
+      if (countryCode) params.country_code = countryCode
+      if (employmentStatus) params.employment_status = employmentStatus
+
+      const res = await apiClient.get('/api/v1/employees/export', {
+        params,
+        responseType: 'blob',
+      })
+
+      const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `acme_employees_${new Date().toISOString().slice(0, 10)}.csv`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch {
+      setError('Failed to export employee CSV')
+    }
+  }
+
+  const handleImportSubmit = async (e) => {
+    e.preventDefault()
+    if (!importFile) {
+      setImportError('Please select a CSV file to upload')
+      return
+    }
+
+    setImporting(true)
+    setImportError(null)
+    setImportResult(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', importFile)
+
+      const res = await apiClient.post('/api/v1/employees/import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      setImportResult(res.data.data)
+      fetchEmployees()
+    } catch (err) {
+      const data = err.response?.data?.data
+      if (data) {
+        setImportResult(data)
+      } else {
+        setImportError(err.response?.data?.error?.message || 'Failed to import CSV file')
+      }
+    } finally {
+      setImporting(false)
+    }
+  }
+
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Page Header */}
@@ -168,6 +242,34 @@ export default function EmployeeDirectoryPage() {
             Manage enterprise personnel records, view active compensation, and track historical revisions across {totalCount.toLocaleString()} employees.
           </Typography>
         </Box>
+
+        <Stack direction="row" spacing={1.5}>
+          <Button
+            variant="outlined"
+            startIcon={<FileDownloadIcon />}
+            onClick={handleExportCsv}
+            size="small"
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
+            Export CSV
+          </Button>
+          {isHrManager && (
+            <Button
+              variant="contained"
+              startIcon={<FileUploadIcon />}
+              onClick={() => {
+                setImportOpen(true)
+                setImportFile(null)
+                setImportResult(null)
+                setImportError(null)
+              }}
+              size="small"
+              sx={{ textTransform: 'none', fontWeight: 600 }}
+            >
+              Import CSV
+            </Button>
+          )}
+        </Stack>
       </Box>
 
       {/* Filter and Search Bar */}
@@ -443,6 +545,93 @@ export default function EmployeeDirectoryPage() {
           sx={{ borderTop: '1px solid #1f2937' }}
         />
       </Card>
+
+      {/* CSV Import Dialog */}
+      <Dialog open={importOpen} onClose={() => !importing && setImportOpen(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ bgcolor: '#111827', borderBottom: '1px solid #1f2937' }}>
+          Bulk Employee & Compensation Import
+        </DialogTitle>
+        <Box component="form" onSubmit={handleImportSubmit} noValidate>
+          <DialogContent sx={{ bgcolor: '#111827', py: 3 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Upload a UTF-8 encoded CSV file with columns: <code>employee_code, first_name, last_name, email, department, country_code (US/GB/DE/IN/SG), employment_status, hire_date (YYYY-MM-DD), current_salary, currency, pay_frequency</code>.
+            </Typography>
+
+            {importError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {importError}
+              </Alert>
+            )}
+
+            {importResult && (
+              <Box sx={{ mb: 2 }}>
+                <Alert severity={importResult.errors?.length ? 'warning' : 'success'} sx={{ mb: 1 }}>
+                  Processed {importResult.total_rows} rows &bull; Successfully created {importResult.created_count} employees &bull; {importResult.errors?.length || 0} validation errors
+                </Alert>
+
+                {importResult.errors?.length > 0 && (
+                  <TableContainer sx={{ maxHeight: 200, bgcolor: '#1f2937', borderRadius: 1 }}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={{ color: '#e5e7eb', fontWeight: 700 }}>Row</TableCell>
+                          <TableCell sx={{ color: '#e5e7eb', fontWeight: 700 }}>Code</TableCell>
+                          <TableCell sx={{ color: '#e5e7eb', fontWeight: 700 }}>Validation Errors</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {importResult.errors.map((err, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell>{err.row}</TableCell>
+                            <TableCell sx={{ fontFamily: 'monospace' }}>{err.code}</TableCell>
+                            <TableCell sx={{ color: '#f87171' }}>{err.errors.join('; ')}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </Box>
+            )}
+
+            <Box sx={{ border: '2px dashed #374151', p: 3, borderRadius: 2, textAlign: 'center', bgcolor: '#0b0f19' }}>
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                id="csv-file-input"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  setImportFile(e.target.files?.[0] || null)
+                  setImportError(null)
+                }}
+              />
+              <label htmlFor="csv-file-input">
+                <Button variant="outlined" component="span" startIcon={<FileUploadIcon />} sx={{ textTransform: 'none' }}>
+                  {importFile ? importFile.name : 'Choose CSV File'}
+                </Button>
+              </label>
+              {importFile && (
+                <Typography variant="caption" sx={{ display: 'block', mt: 1, color: '#34d399' }}>
+                  Ready to upload: {importFile.name} ({(importFile.size / 1024).toFixed(1)} KB)
+                </Typography>
+              )}
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ bgcolor: '#111827', borderTop: '1px solid #1f2937', p: 2 }}>
+            <Button onClick={() => setImportOpen(false)} disabled={importing}>
+              Close
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={importing || !importFile}
+              startIcon={importing ? <CircularProgress size={16} /> : <FileUploadIcon />}
+            >
+              {importing ? 'Processing Import...' : 'Execute Import'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </Container>
   )
 }
