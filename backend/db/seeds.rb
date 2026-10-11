@@ -1,6 +1,13 @@
 # ACME Salary Management System - Deterministic Synthetic Seed Data
 # Generates exactly 10,000 employees, 7 departments, admin/HR users, and realistic salary histories.
 
+# Production Security Guard:
+# The seed script deletes all records before recreating demo data.
+# This must strictly be restricted to development and test environments.
+if Rails.env.production?
+  raise SecurityError, "[FATAL SECURITY VIOLATION] db:seed is strictly prohibited from running in the production environment because it deletes existing corporate data! Refusing to execute."
+end
+
 start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 puts "============================================================"
 puts "  Seeding ACME Salary Management System (Target: 10,000 Emps)"
@@ -10,8 +17,9 @@ puts "============================================================"
 PRNG_SEED = 42
 prng = Random.new(PRNG_SEED)
 
-# 1. Clean slate
-puts "-> Cleaning existing records..."
+# 1. Clean slate (Development/Test only)
+puts "-> Cleaning existing records in #{Rails.env} database..."
+Payslip.delete_all if defined?(Payslip)
 SalaryAuditLog.delete_all
 SalaryRecord.delete_all
 Employee.delete_all

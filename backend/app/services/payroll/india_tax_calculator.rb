@@ -2,11 +2,23 @@
 
 module Payroll
   class IndiaTaxCalculator
-    STANDARD_DEDUCTION = 75_000.0 # FY 2024-25 / 2025-26 New Regime Standard Deduction
-    REBATE_87A_LIMIT = 700_000.0 # Full rebate under 87A if taxable income <= 7L
-    CESS_PERCENTAGE = 0.04 # 4% Health & Education Cess
+    # Statutory Reference:
+    # Finance (No. 2) Act, 2024 / Central Board of Direct Taxes (CBDT)
+    # Applicable Financial Year: FY 2024-25 & FY 2025-26 (Assessment Year 2025-26 & 2026-27)
+    # Section 115BAC (New Tax Regime - Default Regime)
+    FINANCIAL_YEAR = "FY 2024-25 / FY 2025-26"
+    ASSESSMENT_YEAR = "AY 2025-26 / AY 2026-27"
+    STANDARD_DEDUCTION = 75_000.0 # Increased from ₹50,000 to ₹75,000 under Finance (No. 2) Act, 2024
+    REBATE_87A_LIMIT = 700_000.0 # Rebate under Section 87A applies if taxable income <= ₹7,00,000
+    CESS_PERCENTAGE = 0.04 # 4% Health & Education Cess on income tax
 
-    # Slabs for New Tax Regime
+    # Slabs for New Tax Regime under Section 115BAC:
+    # 0 to 3,00,000: 0%
+    # 3,00,001 to 7,00,000: 5% (₹20,000)
+    # 7,00,001 to 10,00,000: 10% (₹30,000)
+    # 10,00,001 to 12,00,000: 15% (₹30,000)
+    # 12,00,001 to 15,00,000: 20% (₹60,000)
+    # Above 15,00,000: 30%
     SLABS = [
       { limit: 300_000.0, rate: 0.00 },
       { limit: 700_000.0, rate: 0.05 },
@@ -29,11 +41,14 @@ module Payroll
 
       if taxable_income <= REBATE_87A_LIMIT
         return {
+          financial_year: FINANCIAL_YEAR,
+          assessment_year: ASSESSMENT_YEAR,
           annual_gross: @annual_gross.round(2),
           standard_deduction: STANDARD_DEDUCTION,
           taxable_income: taxable_income.round(2),
           base_tax: 0.0,
-          rebate_87a: 0.0,
+          rebate_87a: compute_slab_tax(taxable_income).round(2),
+          marginal_relief: 0.0,
           cess: 0.0,
           total_annual_tax: 0.0,
           monthly_tds: 0.0
@@ -41,17 +56,32 @@ module Payroll
       end
 
       # Calculate slab tax
-      base_tax = compute_slab_tax(taxable_income)
+      raw_base_tax = compute_slab_tax(taxable_income)
+      base_tax = raw_base_tax
+      marginal_relief = 0.0
+
+      # Section 87A Marginal Relief proviso:
+      # If taxable income marginally exceeds ₹7,00,000, tax payable cannot exceed
+      # the amount by which taxable income exceeds ₹7,00,000.
+      excess_over_limit = taxable_income - REBATE_87A_LIMIT
+      if raw_base_tax > excess_over_limit
+        marginal_relief = (raw_base_tax - excess_over_limit).round(2)
+        base_tax = excess_over_limit
+      end
+
       cess = (base_tax * CESS_PERCENTAGE).round(2)
       total_annual_tax = (base_tax + cess).round(2)
       monthly_tds = (total_annual_tax / 12.0).round(2)
 
       {
+        financial_year: FINANCIAL_YEAR,
+        assessment_year: ASSESSMENT_YEAR,
         annual_gross: @annual_gross.round(2),
         standard_deduction: STANDARD_DEDUCTION,
         taxable_income: taxable_income.round(2),
         base_tax: base_tax.round(2),
         rebate_87a: 0.0,
+        marginal_relief: marginal_relief,
         cess: cess,
         total_annual_tax: total_annual_tax,
         monthly_tds: monthly_tds

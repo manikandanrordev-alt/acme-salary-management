@@ -64,8 +64,13 @@ module Payroll
       taxable_income = [ @annual_gross - NEW_REGIME_STD_DEDUCTION, 0.0 ].max
       tax_before_cess = compute_new_regime_tax_slabs(taxable_income)
 
-      # Section 87A Rebate: Under New Regime FY 24-25, if taxable income <= 7,00,000, tax is 0
-      tax_after_rebate = taxable_income <= 700_000.00 ? 0.0 : tax_before_cess
+      # Section 87A Rebate & Marginal Relief under Finance Act:
+      tax_after_rebate = if taxable_income <= 700_000.00
+                           0.0
+      else
+                           excess_over_700k = taxable_income - 700_000.00
+                           [ tax_before_cess, excess_over_700k ].min
+      end
       cess = (tax_after_rebate * CESS_RATE).round(2)
       total_tax = (tax_after_rebate + cess).round(2)
 
@@ -107,8 +112,13 @@ module Payroll
       taxable_income = [ @annual_gross - total_deductions, 0.0 ].max
       tax_before_cess = compute_old_regime_tax_slabs(taxable_income)
 
-      # Section 87A Rebate: Under Old Regime, if taxable income <= 5,00,000, tax is 0 (max rebate ₹12,500)
-      tax_after_rebate = taxable_income <= 500_000.00 ? 0.0 : tax_before_cess
+      # Section 87A Rebate & Marginal Relief: Under Old Regime, if taxable income <= 5,00,000, tax is 0
+      tax_after_rebate = if taxable_income <= 500_000.00
+                           0.0
+      else
+                           excess_over_500k = taxable_income - 500_000.00
+                           [ tax_before_cess, excess_over_500k ].min
+      end
       cess = (tax_after_rebate * CESS_RATE).round(2)
       total_tax = (tax_after_rebate + cess).round(2)
 

@@ -96,4 +96,12 @@ RSpec.describe "Database Seed Verification", type: :model do
       ).save!(validate: false)
     }.to raise_error(ActiveRecord::InvalidForeignKey)
   end
+
+  it "strictly prohibits running in production environment to prevent destructive data loss" do
+    allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("production"))
+
+    expect {
+      load Rails.root.join("db/seeds.rb")
+    }.to raise_error(SecurityError, /strictly prohibited from running in the production environment/)
+  end
 end
