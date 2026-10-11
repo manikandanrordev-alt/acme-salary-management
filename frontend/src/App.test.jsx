@@ -25,6 +25,28 @@ describe('App Routing & Authentication Flow', () => {
     expect(screen.getByRole('button', { name: /Sign In/i })).toBeInTheDocument()
   })
 
+  it('toggles password visibility when eye icon button clicked', async () => {
+    apiClient.get.mockRejectedValueOnce({ response: { status: 401 } })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Password/i)).toBeInTheDocument()
+    })
+
+    const passwordInput = screen.getByLabelText(/Password/i)
+    expect(passwordInput).toHaveAttribute('type', 'password')
+
+    const toggleButton = screen.getByRole('button', { name: /toggle visibility/i })
+    expect(toggleButton).toBeInTheDocument()
+
+    fireEvent.click(toggleButton)
+    expect(passwordInput).toHaveAttribute('type', 'text')
+
+    fireEvent.click(toggleButton)
+    expect(passwordInput).toHaveAttribute('type', 'password')
+  })
+
   it('fills demo credentials when demo button clicked and authenticates', async () => {
     apiClient.get.mockRejectedValueOnce({ response: { status: 401 } })
 

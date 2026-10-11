@@ -32,7 +32,13 @@ export function AuthProvider({ children }) {
       setUser(res.data.data.user)
       return { success: true, user: res.data.data.user }
     } catch (err) {
-      const msg = err.response?.data?.error?.message || 'Invalid email or password'
+      const msg =
+        err.response?.data?.error?.message ||
+        (err.code === 'ERR_NETWORK' || !err.response
+          ? 'Network error: Cannot reach backend server on port 3000.'
+          : err.response?.status >= 500
+            ? `Server error (${err.response.status}). Please check backend service.`
+            : 'Invalid email or password')
       setError(msg)
       return { success: false, error: msg }
     }
