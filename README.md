@@ -64,12 +64,15 @@ acme-salary-management/
 | **Milestone 8** | **Completed** | Authorized CSV export and validated import workflows. |
 | **Milestone 9** | **Completed** | Quality audit, full test suites, RuboCop/ESLint checks, and index optimization. |
 | **Milestone 10** | **Completed** | Production deployment readiness, Docker configurations, and CI verification. |
-| **Milestone 11** | *Queued* | Final artifacts, setup walkthrough, AI usage review, and demonstration recording. |
+| **Milestone 11** | **Completed** | Final artifacts, assessment evaluation report, AI usage reflection, and video script. |
 
 ---
 
 ## 5. Documentation Links
 
+- [Incubyte Assessment Evaluation & Architecture Report](docs/assessment-evaluation.md)
+- [Video Demonstration Walkthrough Script](docs/walkthrough-script.md)
+- [AI Usage & Pair Programming Reflection](docs/ai-usage-reflection.md)
 - [Product Requirements Document (PRD)](docs/requirements.md)
 - [System Architecture Specification](docs/architecture.md)
 - [Data Model & Business Rules](docs/data-model.md)
