@@ -32,6 +32,12 @@ export default function LoginPage() {
   const { login, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
+  const showDemoCredentials =
+    import.meta.env.DEV ||
+    import.meta.env.MODE === 'development' ||
+    import.meta.env.MODE === 'test' ||
+    import.meta.env.VITE_ENABLE_DEMO_LOGIN === 'true'
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/employees', { replace: true })
@@ -158,64 +164,68 @@ export default function LoginPage() {
             </Button>
           </Box>
 
-          <Divider sx={{ my: 4, borderColor: '#1f2937' }}>
-            <Typography variant="caption" color="text.secondary">
-              QUICK DEMO CREDENTIALS
-            </Typography>
-          </Divider>
+          {showDemoCredentials && (
+            <>
+              <Divider sx={{ my: 4, borderColor: '#1f2937' }}>
+                <Typography variant="caption" color="text.secondary">
+                  QUICK DEMO CREDENTIALS (LOCAL DEV ONLY)
+                </Typography>
+              </Divider>
 
-          <Stack spacing={1.5}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => handleQuickLogin('hr_director@acme.com', 'Password123!')}
-              sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ShieldIcon fontSize="small" color="success" />
-                <Typography variant="body2" fontWeight={600}>
-                  hr_director@acme.com
+              <Stack spacing={1.5}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleQuickLogin('hr_director@acme.com', 'Password123!')}
+                  sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <ShieldIcon fontSize="small" color="success" />
+                    <Typography variant="body2" fontWeight={600}>
+                      hr_director@acme.com
+                    </Typography>
+                  </Box>
+                  <Chip label="HR Manager (Full Access)" size="small" color="success" sx={{ fontSize: '0.7rem' }} />
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleQuickLogin('compliance@acme.com', 'Password123!')}
+                  sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <ShieldIcon fontSize="small" color="warning" />
+                    <Typography variant="body2" fontWeight={600}>
+                      compliance@acme.com
+                    </Typography>
+                  </Box>
+                  <Chip label="Auditor (Read-Only)" size="small" color="warning" sx={{ fontSize: '0.7rem' }} />
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleQuickLogin('admin@acme.com', 'Password123!')}
+                  sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <ShieldIcon fontSize="small" color="primary" />
+                    <Typography variant="body2" fontWeight={600}>
+                      admin@acme.com
+                    </Typography>
+                  </Box>
+                  <Chip label="System Admin" size="small" color="primary" sx={{ fontSize: '0.7rem' }} />
+                </Button>
+              </Stack>
+
+              <Box sx={{ mt: 2.5, p: 1.5, bgcolor: '#0b0f19', borderRadius: 1.5, border: '1px solid #1f2937', textAlign: 'center' }}>
+                <Typography variant="caption" color="text.secondary">
+                  Demo password for local development: <strong style={{ color: '#38bdf8' }}>Password123!</strong>
                 </Typography>
               </Box>
-              <Chip label="HR Manager (Full Access)" size="small" color="success" sx={{ fontSize: '0.7rem' }} />
-            </Button>
-
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => handleQuickLogin('compliance@acme.com', 'Password123!')}
-              sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ShieldIcon fontSize="small" color="warning" />
-                <Typography variant="body2" fontWeight={600}>
-                  compliance@acme.com
-                </Typography>
-              </Box>
-              <Chip label="Auditor (Read-Only)" size="small" color="warning" sx={{ fontSize: '0.7rem' }} />
-            </Button>
-
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => handleQuickLogin('admin@acme.com', 'Password123!')}
-              sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <ShieldIcon fontSize="small" color="primary" />
-                <Typography variant="body2" fontWeight={600}>
-                  admin@acme.com
-                </Typography>
-              </Box>
-              <Chip label="System Admin" size="small" color="primary" sx={{ fontSize: '0.7rem' }} />
-            </Button>
-          </Stack>
-
-          <Box sx={{ mt: 2.5, p: 1.5, bgcolor: '#0b0f19', borderRadius: 1.5, border: '1px solid #1f2937', textAlign: 'center' }}>
-            <Typography variant="caption" color="text.secondary">
-              Demo password for all accounts: <strong style={{ color: '#38bdf8' }}>Password123!</strong>
-            </Typography>
-          </Box>
+            </>
+          )}
         </CardContent>
       </Card>
     </Container>

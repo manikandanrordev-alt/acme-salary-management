@@ -42,7 +42,7 @@ ACME is an enterprise organization employing 10,000 personnel. The organization 
 - **Data Integrity**: Foreign keys, composite indexes, and `DECIMAL(12, 2)` monetary precision.
 - **Security**: Zero plaintext credentials, parameterized queries, and CSRF token enforcement.
 - **Quality Gates**:
-  - RSpec: 129 examples, 0 failures.
+  - RSpec: 134 examples, 0 failures.
   - RuboCop: 83 files, 0 offenses.
   - Brakeman: 0 warnings, 0 errors.
   - Vitest: 9 tests, 0 failures.

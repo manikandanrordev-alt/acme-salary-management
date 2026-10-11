@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe Payroll::IndiaTaxCalculator do
-  describe ".calculate - Authoritative Rules (Finance (No. 2) Act, 2024 & FY 2026-27 Ongoing Year)" do
+  describe ".calculate - Year-Specific Statutory Rules" do
     it "determines active financial year as FY 2026-27 for current date (October 2026)" do
       res = described_class.calculate(1_000_000, date: Date.new(2026, 10, 11))
 
       expect(res[:financial_year]).to eq("FY 2026-27")
       expect(res[:assessment_year]).to eq("AY 2027-28")
-      expect(res[:supported_financial_years]).to include("FY 2024-25", "FY 2025-26", "FY 2026-27")
+      expect(res[:supported_financial_years]).to include("FY 2023-24", "FY 2024-25", "FY 2025-26", "FY 2026-27")
     end
 
     it "accurately resolves prior financial year FY 2024-25 for earlier dates" do
@@ -17,12 +19,83 @@ RSpec.describe Payroll::IndiaTaxCalculator do
       expect(res[:assessment_year]).to eq("AY 2025-26")
     end
 
-    it "allows explicit financial_year override" do
-      res = described_class.calculate(1_000_000, financial_year: "FY 2025-26")
+    it "applies FY 2023-24 statutory rules (₹50,000 standard deduction and 3L/6L/9L/12L/15L slabs)" do
+      # In FY 2023-24, Standard Deduction was ₹50,000
+      # Gross: 10,00,000 -> Std Ded: 50,000 -> Taxable: 9,50,000
+      # Slabs: 0-3L (0) + 3-6L (3L @ 5% = 15,000) + 6-9L (3L @ 10% = 30,000) + 9-9.5L (50k @ 15% = 7,500)
+      # Base Tax = 52,500
+      # Cess 4% = 2,100
+      # Total Tax = 54,600
+      # Monthly TDS = 4,550.00
+      res = described_class.calculate(1_000_000, financial_year: "FY 2023-24")
 
-      expect(res[:financial_year]).to eq("FY 2025-26")
+      expect(res[:financial_year]).to eq("FY 2023-24")
+      expect(res[:assessment_year]).to eq("AY 2024-25")
+      expect(res[:standard_deduction]).to eq(50_000.0)
+      expect(res[:taxable_income]).to eq(950_000.0)
+      expect(res[:base_tax]).to eq(52_500.0)
+      expect(res[:cess]).to eq(2_100.0)
+      expect(res[:total_annual_tax]).to eq(54_600.0)
+      expect(res[:monthly_tds]).to eq(4_550.0)
     end
 
+    it "applies FY 2024-25 / FY 2026-27 rules (₹75,000 standard deduction and 3L/7L/10L/12L/15L slabs)" do
+      # In FY 2026-27, Standard Deduction is ₹75,000
+      # Gross: 10,00,000 -> Std Ded: 75,000 -> Taxable: 9,25,000
+      # Slabs: 0-3L (0) + 3-7L (4L @ 5% = 20,000) + 7-9.25L (2.25L @ 10% = 22,500)
+      # Base Tax = 42,500
+      # Cess 4% = 1,700
+      # Total Tax = 44,200
+      # Monthly TDS = 3,683.33
+      res = described_class.calculate(1_000_000, financial_year: "FY 2026-27")
+
+      expect(res[:financial_year]).to eq("FY 2026-27")
+      expect(res[:assessment_year]).to eq("AY 2027-28")
+      expect(res[:standard_deduction]).to eq(75_000.0)
+      expect(res[:taxable_income]).to eq(925_000.0)
+      expect(res[:base_tax]).to eq(42_500.0)
+      expect(res[:cess]).to eq(1_700.0)
+      expect(res[:total_annual_tax]).to eq(44_200.0)
+      expect(res[:monthly_tds]).to eq(3_683.33)
+    end
+  end
+
+  describe ".calculate - Zero and Negative Inputs" do
+    it "handles zero gross salary safely without errors" do
+      res = described_class.calculate(0)
+
+      expect(res[:annual_gross]).to eq(0.0)
+      expect(res[:standard_deduction]).to eq(0.0)
+      expect(res[:taxable_income]).to eq(0.0)
+      expect(res[:base_tax]).to eq(0.0)
+      expect(res[:rebate_87a]).to eq(0.0)
+      expect(res[:marginal_relief]).to eq(0.0)
+      expect(res[:cess]).to eq(0.0)
+      expect(res[:total_annual_tax]).to eq(0.0)
+      expect(res[:monthly_tds]).to eq(0.0)
+    end
+
+    it "clamps negative salary input safely to zero" do
+      res = described_class.calculate(-50_000)
+
+      expect(res[:annual_gross]).to eq(0.0)
+      expect(res[:standard_deduction]).to eq(0.0)
+      expect(res[:taxable_income]).to eq(0.0)
+      expect(res[:total_annual_tax]).to eq(0.0)
+      expect(res[:monthly_tds]).to eq(0.0)
+    end
+
+    it "caps standard deduction to gross salary when salary is less than ₹75,000" do
+      res = described_class.calculate(50_000)
+
+      expect(res[:annual_gross]).to eq(50_000.0)
+      expect(res[:standard_deduction]).to eq(50_000.0) # Cannot exceed gross
+      expect(res[:taxable_income]).to eq(0.0)
+      expect(res[:total_annual_tax]).to eq(0.0)
+    end
+  end
+
+  describe ".calculate - Authoritative Boundaries & Rebate Proviso (FY 2026-27)" do
     it "applies zero tax for basic income of ₹3,00,000 within initial slab" do
       res = described_class.calculate(300_000)
 
@@ -73,25 +146,6 @@ RSpec.describe Payroll::IndiaTaxCalculator do
       expect(res[:base_tax]).to eq(22_500.0)
       expect(res[:cess]).to eq(900.0)
       expect(res[:total_annual_tax]).to eq(23_400.0)
-    end
-
-    it "computes correct slab tax and cess for ₹10,00,000 annual CTC" do
-      # Gross: 10,00,000 -> Taxable: 9,25,000
-      # Slabs:
-      # 0-3L: 0
-      # 3-7L (4L @ 5%): 20,000
-      # 7-9.25L (2.25L @ 10%): 22,500
-      # Base Tax = 42,500
-      # Cess 4% = 1,700
-      # Total Tax = 44,200
-      # Monthly TDS = 44,200 / 12 = 3,683.33
-      res = described_class.calculate(1_000_000)
-
-      expect(res[:taxable_income]).to eq(925_000.0)
-      expect(res[:base_tax]).to eq(42_500.0)
-      expect(res[:cess]).to eq(1_700.0)
-      expect(res[:total_annual_tax]).to eq(44_200.0)
-      expect(res[:monthly_tds]).to eq(3_683.33)
     end
 
     it "computes correct slab tax and 4% cess for ₹12,00,000 annual CTC" do

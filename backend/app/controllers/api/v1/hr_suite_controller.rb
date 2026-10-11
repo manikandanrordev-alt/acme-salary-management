@@ -34,7 +34,7 @@ module Api
             { code: "EPFO_ECR", name: "EPFO Electronic Challan cum Return", period: "September 2026", status: "FILED", due_date: "15-Oct-2026", reference_no: "TRRN-992819203" },
             { code: "ESIC_MTH", name: "ESIC Monthly Contribution Return", period: "September 2026", status: "FILED", due_date: "15-Oct-2026", reference_no: "ESIC-CH-88271" },
             { code: "PT_FORM_III", name: "Professional Tax Form III Return", period: "Q2 2026", status: "PAID", due_date: "20-Oct-2026", reference_no: "PT-MH-2026-90" },
-            { code: "TDS_24Q", name: "Quarterly TDS Return (Form 24Q)", period: "Q2 FY 24-25", status: "READY_FOR_UPLOAD", due_date: "31-Oct-2026", reference_no: "TDS-ACK-10294" },
+            { code: "TDS_24Q", name: "Quarterly TDS Return (Form 24Q)", period: "Q2 FY 26-27", status: "READY_FOR_UPLOAD", due_date: "31-Oct-2026", reference_no: "TDS-ACK-10294" },
             { code: "GRATUITY_TR", name: "Payment of Gratuity Act Group Trust", period: "Annual Valuation", status: "FULLY_FUNDED", due_date: "31-Dec-2026", reference_no: "LIC-GR-TRUST-442" }
           ],
           appraisal_cycle: {
@@ -55,6 +55,7 @@ module Api
         hra_exemption = params[:hra_exemption].presence || 0.0
         home_loan_interest = params[:home_loan_interest].presence || 0.0
         nps_80ccd_1b = params[:nps_80ccd_1b].presence || 0.0
+        financial_year = params[:financial_year].presence
 
         result = Payroll::TaxRegimeComparator.compare(
           annual_gross: annual_gross,
@@ -62,7 +63,8 @@ module Api
           sec_80d: sec_80d,
           hra_exemption: hra_exemption,
           home_loan_interest: home_loan_interest,
-          nps_80ccd_1b: nps_80ccd_1b
+          nps_80ccd_1b: nps_80ccd_1b,
+          financial_year: financial_year
         )
 
         render json: result
