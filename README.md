@@ -57,8 +57,8 @@ acme-salary-management/
 | **Milestone 1** | **Completed** | Rails API & React SPA initialization, MySQL config, health check, CI setup. |
 | **Milestone 2** | **Completed** | Relational schema, models, constraints, and deterministic 10,000 synthetic employee seed data. |
 | **Milestone 3** | **Completed** | Devise cookie-based authentication, CSRF/CORS configuration, and authorization guards. |
-| **Milestone 4** | **Completed (Pending Approval)** | Employee directory endpoints with server-side pagination, sorting, and search. |
-| **Milestone 5** | *Queued* | Effective-dated salary revisions and transactional audit logging. |
+| **Milestone 4** | **Completed** | Employee directory endpoints with server-side pagination, sorting, and search. |
+| **Milestone 5** | **Completed** | Effective-dated salary revisions and transactional audit logging. |
 | **Milestone 6** | *Queued* | Material UI frontend dashboard, directory table, and salary revision modal. |
 | **Milestone 7** | *Queued* | Compensation analytics engine and currency-safe summary cards. |
 | **Milestone 8** | *Queued* | Authorized CSV export and validated import workflows. |

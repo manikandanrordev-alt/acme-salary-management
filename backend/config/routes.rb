@@ -15,7 +15,9 @@ Rails.application.routes.draw do
         get "hr_only", to: "sessions#hr_only"
       end
 
-      resources :employees, only: [ :index, :show ]
+      resources :employees, only: [ :index, :show ] do
+        resources :salary_revisions, only: [ :create ]
+      end
     end
   end
 end
