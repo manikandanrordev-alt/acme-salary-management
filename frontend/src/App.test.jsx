@@ -38,7 +38,7 @@ describe('App Routing & Authentication Flow', () => {
     fireEvent.click(screen.getByText('hr_director@acme.com'))
 
     expect(screen.getByLabelText(/Email Address/i)).toHaveValue('hr_director@acme.com')
-    expect(screen.getByLabelText(/Password/i)).toHaveValue('SecurePassword123!')
+    expect(screen.getByLabelText(/Password/i)).toHaveValue('Password123!')
 
     // Mock successful login and subsequent employee list
     apiClient.post.mockResolvedValueOnce({

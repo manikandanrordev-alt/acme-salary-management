@@ -146,7 +146,7 @@ export default function LoginPage() {
             <Button
               variant="outlined"
               size="small"
-              onClick={() => handleQuickLogin('hr_director@acme.com', 'SecurePassword123!')}
+              onClick={() => handleQuickLogin('hr_director@acme.com', 'Password123!')}
               sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -161,7 +161,7 @@ export default function LoginPage() {
             <Button
               variant="outlined"
               size="small"
-              onClick={() => handleQuickLogin('compliance@acme.com', 'AuditorPassword123!')}
+              onClick={() => handleQuickLogin('compliance@acme.com', 'Password123!')}
               sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -176,7 +176,7 @@ export default function LoginPage() {
             <Button
               variant="outlined"
               size="small"
-              onClick={() => handleQuickLogin('admin@acme.com', 'AdminPassword123!')}
+              onClick={() => handleQuickLogin('admin@acme.com', 'Password123!')}
               sx={{ justifyContent: 'space-between', textTransform: 'none', borderColor: '#374151' }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -188,6 +188,12 @@ export default function LoginPage() {
               <Chip label="System Admin" size="small" color="primary" sx={{ fontSize: '0.7rem' }} />
             </Button>
           </Stack>
+
+          <Box sx={{ mt: 2.5, p: 1.5, bgcolor: '#0b0f19', borderRadius: 1.5, border: '1px solid #1f2937', textAlign: 'center' }}>
+            <Typography variant="caption" color="text.secondary">
+              Demo password for all accounts: <strong style={{ color: '#38bdf8' }}>Password123!</strong>
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
     </Container>

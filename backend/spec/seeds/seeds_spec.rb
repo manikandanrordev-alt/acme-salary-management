@@ -22,11 +22,27 @@ RSpec.describe "Database Seed Verification", type: :model do
   end
 
   it "seeds administrative, HR manager, and auditor users" do
-    expect(User.count).to eq(3)
+    expect(User.count).to eq(5)
     hr_user = User.find_by(email: "hr_manager@acme.com")
     expect(hr_user).to be_present
     expect(hr_user.role).to eq("hr_manager")
     expect(hr_user.valid_password?("Password123!")).to be true
+
+    hr_director = User.find_by(email: "hr_director@acme.com")
+    expect(hr_director).to be_present
+    expect(hr_director.valid_password?("Password123!")).to be true
+
+    auditor = User.find_by(email: "auditor@acme.com")
+    expect(auditor).to be_present
+    expect(auditor.valid_password?("Password123!")).to be true
+
+    compliance = User.find_by(email: "compliance@acme.com")
+    expect(compliance).to be_present
+    expect(compliance.valid_password?("Password123!")).to be true
+
+    admin = User.find_by(email: "admin@acme.com")
+    expect(admin).to be_present
+    expect(admin.valid_password?("Password123!")).to be true
   end
 
   it "ensures every employee has exactly one active salary record" do

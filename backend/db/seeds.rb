@@ -30,10 +30,18 @@ users_data = [
     updated_at: Time.current
   },
   {
+    email: "hr_director@acme.com",
+    full_name: "Eleanor Vance (HR Director)",
+    role: "hr_manager",
+    encrypted_password: BCrypt::Password.create("Password123!"),
+    created_at: Time.current,
+    updated_at: Time.current
+  },
+  {
     email: "admin@acme.com",
     full_name: "System Administrator",
     role: "admin",
-    encrypted_password: BCrypt::Password.create("AdminSecret123!"),
+    encrypted_password: BCrypt::Password.create("Password123!"),
     created_at: Time.current,
     updated_at: Time.current
   },
@@ -41,7 +49,15 @@ users_data = [
     email: "auditor@acme.com",
     full_name: "Marcus Aurelius (Compliance Auditor)",
     role: "auditor",
-    encrypted_password: BCrypt::Password.create("AuditorSecret123!"),
+    encrypted_password: BCrypt::Password.create("Password123!"),
+    created_at: Time.current,
+    updated_at: Time.current
+  },
+  {
+    email: "compliance@acme.com",
+    full_name: "Marcus Aurelius (Compliance Auditor)",
+    role: "auditor",
+    encrypted_password: BCrypt::Password.create("Password123!"),
     created_at: Time.current,
     updated_at: Time.current
   }
