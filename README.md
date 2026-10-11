@@ -63,7 +63,7 @@ acme-salary-management/
 | **Milestone 7** | **Completed** | Compensation analytics engine and currency-safe summary cards. |
 | **Milestone 8** | **Completed** | Authorized CSV export and validated import workflows. |
 | **Milestone 9** | **Completed** | Quality audit, full test suites, RuboCop/ESLint checks, and index optimization. |
-| **Milestone 10** | *Queued* | Production deployment readiness, Docker configurations, and CI verification. |
+| **Milestone 10** | **Completed** | Production deployment readiness, Docker configurations, and CI verification. |
 | **Milestone 11** | *Queued* | Final artifacts, setup walkthrough, AI usage review, and demonstration recording. |
 
 ---
@@ -125,6 +125,22 @@ npm run build
 
 # Start Vite dev server (port 5173 with proxy to port 3000)
 npm run dev
+```
+
+### Containerized Production Stack (Docker Compose)
+```bash
+# Build and run the entire multi-container production stack (MySQL 8, Rails 8 API, Nginx SPA)
+docker compose up --build -d
+
+# Check service health
+docker compose ps
+
+# Seed 10,000 synthetic employees in containerized database
+docker compose exec backend bin/rails db:seed
+
+# Access the application
+# Frontend SPA: http://localhost:80 (or http://localhost:5173)
+# Backend API:  http://localhost:3000/api/v1/health
 ```
 
 ### Verify End-to-End Health Check
