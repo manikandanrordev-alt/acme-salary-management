@@ -45,6 +45,9 @@ module Payroll
       breakeven_deductions = calculate_breakeven_deductions
 
       {
+        financial_year: IndiaTaxCalculator.current_financial_year,
+        assessment_year: IndiaTaxCalculator.current_assessment_year,
+        supported_financial_years: IndiaTaxCalculator::SUPPORTED_FINANCIAL_YEARS,
         annual_gross: @annual_gross,
         new_regime: new_regime_result,
         old_regime: old_regime_result,

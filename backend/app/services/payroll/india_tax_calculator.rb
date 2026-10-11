@@ -4,12 +4,13 @@ module Payroll
   class IndiaTaxCalculator
     # Statutory Reference:
     # Finance (No. 2) Act, 2024 / Central Board of Direct Taxes (CBDT)
-    # Applicable Financial Year: FY 2024-25 & FY 2025-26 (Assessment Year 2025-26 & 2026-27)
     # Section 115BAC (New Tax Regime - Default Regime)
-    FINANCIAL_YEAR = "FY 2024-25 / FY 2025-26"
-    ASSESSMENT_YEAR = "AY 2025-26 / AY 2026-27"
-    STANDARD_DEDUCTION = 75_000.0 # Increased from ₹50,000 to ₹75,000 under Finance (No. 2) Act, 2024
-    REBATE_87A_LIMIT = 700_000.0 # Rebate under Section 87A applies if taxable income <= ₹7,00,000
+    # Supports FY 2024-25, FY 2025-26, and current FY 2026-27 (AY 2027-28).
+    SUPPORTED_FINANCIAL_YEARS = [ "FY 2024-25", "FY 2025-26", "FY 2026-27" ].freeze
+    FINANCIAL_YEAR = "FY 2026-27"
+    ASSESSMENT_YEAR = "AY 2027-28"
+    STANDARD_DEDUCTION = 75_000.0 # Standard Deduction under Section 16(ia)
+    REBATE_87A_LIMIT = 700_000.0 # Full rebate under Section 87A if taxable income <= ₹7,00,000
     CESS_PERCENTAGE = 0.04 # 4% Health & Education Cess on income tax
 
     # Slabs for New Tax Regime under Section 115BAC:
@@ -28,12 +29,28 @@ module Payroll
       { limit: Float::INFINITY, rate: 0.30 }
     ].freeze
 
-    def self.calculate(annual_gross_salary)
-      new(annual_gross_salary).calculate
+    def self.current_financial_year(date = Date.current)
+      if date.month >= 4
+        "FY #{date.year}-#{(date.year + 1).to_s[-2..]}"
+      else
+        "FY #{date.year - 1}-#{date.year.to_s[-2..]}"
+      end
     end
 
-    def initialize(annual_gross_salary)
+    def self.current_assessment_year(date = Date.current)
+      start_year = date.month >= 4 ? date.year + 1 : date.year
+      "AY #{start_year}-#{(start_year + 1).to_s[-2..]}"
+    end
+
+    def self.calculate(annual_gross_salary, date: Date.current, financial_year: nil)
+      new(annual_gross_salary, date: date, financial_year: financial_year).calculate
+    end
+
+    def initialize(annual_gross_salary, date: Date.current, financial_year: nil)
       @annual_gross = [ annual_gross_salary.to_f, 0.0 ].max
+      @date = date || Date.current
+      @financial_year = financial_year || self.class.current_financial_year(@date)
+      @assessment_year = self.class.current_assessment_year(@date)
     end
 
     def calculate
@@ -41,8 +58,9 @@ module Payroll
 
       if taxable_income <= REBATE_87A_LIMIT
         return {
-          financial_year: FINANCIAL_YEAR,
-          assessment_year: ASSESSMENT_YEAR,
+          financial_year: @financial_year,
+          assessment_year: @assessment_year,
+          supported_financial_years: SUPPORTED_FINANCIAL_YEARS,
           annual_gross: @annual_gross.round(2),
           standard_deduction: STANDARD_DEDUCTION,
           taxable_income: taxable_income.round(2),
@@ -74,8 +92,9 @@ module Payroll
       monthly_tds = (total_annual_tax / 12.0).round(2)
 
       {
-        financial_year: FINANCIAL_YEAR,
-        assessment_year: ASSESSMENT_YEAR,
+        financial_year: @financial_year,
+        assessment_year: @assessment_year,
+        supported_financial_years: SUPPORTED_FINANCIAL_YEARS,
         annual_gross: @annual_gross.round(2),
         standard_deduction: STANDARD_DEDUCTION,
         taxable_income: taxable_income.round(2),

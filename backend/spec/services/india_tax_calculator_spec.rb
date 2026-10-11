@@ -1,12 +1,39 @@
 require "rails_helper"
 
 RSpec.describe Payroll::IndiaTaxCalculator do
-  describe ".calculate - Authoritative Rules (Finance (No. 2) Act, 2024 / FY 2024-25 & FY 2025-26)" do
+  describe ".calculate - Authoritative Rules (Finance (No. 2) Act, 2024 & FY 2026-27 Ongoing Year)" do
+    it "determines active financial year as FY 2026-27 for current date (October 2026)" do
+      res = described_class.calculate(1_000_000, date: Date.new(2026, 10, 11))
+
+      expect(res[:financial_year]).to eq("FY 2026-27")
+      expect(res[:assessment_year]).to eq("AY 2027-28")
+      expect(res[:supported_financial_years]).to include("FY 2024-25", "FY 2025-26", "FY 2026-27")
+    end
+
+    it "accurately resolves prior financial year FY 2024-25 for earlier dates" do
+      res = described_class.calculate(1_000_000, date: Date.new(2025, 2, 1))
+
+      expect(res[:financial_year]).to eq("FY 2024-25")
+      expect(res[:assessment_year]).to eq("AY 2025-26")
+    end
+
+    it "allows explicit financial_year override" do
+      res = described_class.calculate(1_000_000, financial_year: "FY 2025-26")
+
+      expect(res[:financial_year]).to eq("FY 2025-26")
+    end
+
+    it "applies zero tax for basic income of ₹3,00,000 within initial slab" do
+      res = described_class.calculate(300_000)
+
+      expect(res[:taxable_income]).to eq(225_000.0)
+      expect(res[:total_annual_tax]).to eq(0.0)
+    end
+
     it "applies zero tax for income up to ₹7,75,000 due to ₹75,000 standard deduction and Section 87A rebate" do
       # 7,75,000 - 75,000 std ded = 7,00,000 taxable. 87A rebate makes tax = 0
       res = described_class.calculate(775_000)
 
-      expect(res[:financial_year]).to eq("FY 2024-25 / FY 2025-26")
       expect(res[:standard_deduction]).to eq(75_000.0)
       expect(res[:taxable_income]).to eq(700_000.0)
       expect(res[:total_annual_tax]).to eq(0.0)
@@ -32,6 +59,20 @@ RSpec.describe Payroll::IndiaTaxCalculator do
       expect(res[:base_tax]).to eq(5_000.0)
       expect(res[:cess]).to eq(200.0)
       expect(res[:total_annual_tax]).to eq(5_200.0)
+    end
+
+    it "correctly terminates marginal relief when normal slab tax is lower than excess income (e.g. ₹8,00,000)" do
+      # Gross: 8,00,000 -> Taxable: 7,25,000 (Excess over 7L is ₹25,000)
+      # Raw tax: 3L-7L (20,000) + 7L-7.25L (25k @ 10% = 2,500) = 22,500
+      # Since Raw tax (22,500) < Excess income (25,000), normal slab tax applies without marginal relief
+      # Cess 4% = 900; Total = 23,400
+      res = described_class.calculate(800_000)
+
+      expect(res[:taxable_income]).to eq(725_000.0)
+      expect(res[:marginal_relief]).to eq(0.0)
+      expect(res[:base_tax]).to eq(22_500.0)
+      expect(res[:cess]).to eq(900.0)
+      expect(res[:total_annual_tax]).to eq(23_400.0)
     end
 
     it "computes correct slab tax and cess for ₹10,00,000 annual CTC" do
