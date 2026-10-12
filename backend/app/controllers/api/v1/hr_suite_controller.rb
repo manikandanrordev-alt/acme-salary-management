@@ -9,12 +9,11 @@ module Api
       # GET /api/v1/hr_suite/overview
       def overview
         total_employees = Employee.count
-        active_salaries = SalaryRecord.current.sum(:amount)
-        monthly_wage_bill = active_salaries.to_f
-        annual_wage_bill = (monthly_wage_bill * 12.0).round(2)
+        annual_wage_bill = SalaryRecord.current.sum(:amount).to_f.round(2)
+        monthly_wage_bill = (annual_wage_bill / 12.0).round(2)
 
         # Enterprise reserves calculations
-        estimated_basic_pool = monthly_wage_bill * 0.50
+        estimated_basic_pool = (monthly_wage_bill * 0.50).round(2)
         annual_gratuity_liability_reserve = ((15.0 / (26.0 * 12.0)) * estimated_basic_pool * 12.0).round(2)
         annual_diwali_bonus_reserve = (estimated_basic_pool * 12.0 * 0.0833).round(2)
         annual_employer_pf_pool = (estimated_basic_pool * 0.12 * 12.0).round(2)
@@ -40,7 +39,7 @@ module Api
           appraisal_cycle: {
             name: "FY 2026-27 Executive Appraisal & Merit Cycle",
             status: "IN_PROGRESS",
-            allocated_budget: (annual_wage_bill * 0.085).round(2), # 8.5% merit pool
+            allocated_budget: (annual_wage_bill * 0.09).round(2), # 9% merit pool
             recommended_average_increment: 9.2,
             target_completion_date: "31-Oct-2026"
           }
@@ -135,14 +134,21 @@ module Api
 
       # GET /api/v1/hr_suite/appraisal_distribution
       def appraisal_distribution
-        active_salaries = SalaryRecord.current.sum(:amount).to_f
-        total_headcount = Employee.count
+        currency = params[:currency].presence
+        records = SalaryRecord.current
+        records = records.where(currency: currency) if currency.present?
+
+        annual_wage_bill = records.sum(:amount).to_f.round(2)
+        monthly_wage_bill = (annual_wage_bill / 12.0).round(2)
+        total_headcount = currency.present? ? Employee.joins(:salary_records).merge(records).count : Employee.count
 
         render json: {
           total_headcount: total_headcount,
-          total_monthly_wage_bill: active_salaries,
-          total_annual_wage_bill: (active_salaries * 12.0).round(2),
-          merit_pool_budget: (active_salaries * 12.0 * 0.09).round(2), # 9% pool
+          total_monthly_wage_bill: monthly_wage_bill,
+          total_annual_wage_bill: annual_wage_bill,
+          merit_pool_budget: (annual_wage_bill * 0.09).round(2), # 9% merit pool
+          period: "annual",
+          currency: currency || "INR",
           bell_curve: [
             { rating: "Band 5 (Outstanding / Top 10%)", target_percentage: 10, employee_count: (total_headcount * 0.10).round, recommended_increment: "15% - 22%", avg_increment: 18.0 },
             { rating: "Band 4 (Exceeds Expectations / 25%)", target_percentage: 25, employee_count: (total_headcount * 0.25).round, recommended_increment: "11% - 14%", avg_increment: 12.5 },
