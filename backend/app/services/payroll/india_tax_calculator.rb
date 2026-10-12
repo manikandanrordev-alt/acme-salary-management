@@ -10,10 +10,12 @@ module Payroll
     # - FY 2023-24 (AY 2024-25): Finance Act, 2023 (Std Ded ₹50k, 6 slabs, 87A rebate up to ₹7L)
     # - FY 2024-25 (AY 2025-26): Finance (No. 2) Act, 2024 (Std Ded ₹75k, 6 restructured slabs, 87A rebate up to ₹7L)
     # - FY 2025-26 (AY 2026-27): CBDT Official Guidance for AY 2026-27 (Std Ded ₹75k, ₹4L-₹24L slabs, 87A rebate up to ₹12L + marginal relief)
-    # - FY 2026-27 (AY 2027-28): Current Ongoing Financial Year (October 2026 operational year)
+    # - FY 2026-27 (Tax Year 2026-27): India's Income-tax Act, 2025 replaces legacy Assessment Year (AY 2027-28) with Tax Year concept
 
     YEAR_RULES = {
       "FY 2023-24" => {
+        tax_year: "Tax Year 2023-24",
+        applicable_year: "AY 2024-25",
         assessment_year: "AY 2024-25",
         standard_deduction: 50_000.0,
         rebate_87a_limit: 700_000.0,
@@ -27,6 +29,8 @@ module Payroll
         ].freeze
       }.freeze,
       "FY 2024-25" => {
+        tax_year: "Tax Year 2024-25",
+        applicable_year: "AY 2025-26",
         assessment_year: "AY 2025-26",
         standard_deduction: 75_000.0,
         rebate_87a_limit: 700_000.0,
@@ -40,6 +44,8 @@ module Payroll
         ].freeze
       }.freeze,
       "FY 2025-26" => {
+        tax_year: "Tax Year 2025-26",
+        applicable_year: "AY 2026-27",
         assessment_year: "AY 2026-27",
         standard_deduction: 75_000.0,
         rebate_87a_limit: 1_200_000.0,
@@ -54,7 +60,9 @@ module Payroll
         ].freeze
       }.freeze,
       "FY 2026-27" => {
-        assessment_year: "AY 2027-28",
+        tax_year: "Tax Year 2026-27",
+        applicable_year: "Tax Year 2026-27",
+        assessment_year: "Tax Year 2026-27",
         standard_deduction: 75_000.0,
         rebate_87a_limit: 1_200_000.0,
         slabs: [
@@ -71,7 +79,9 @@ module Payroll
 
     SUPPORTED_FINANCIAL_YEARS = YEAR_RULES.keys.freeze
     FINANCIAL_YEAR = "FY 2026-27"
-    ASSESSMENT_YEAR = "AY 2027-28"
+    TAX_YEAR = "Tax Year 2026-27"
+    APPLICABLE_YEAR = "Tax Year 2026-27"
+    ASSESSMENT_YEAR = "Tax Year 2026-27"
     CESS_PERCENTAGE = 0.04 # 4% Health & Education Cess on income tax
 
     def self.current_financial_year(date = Date.current)
@@ -82,22 +92,35 @@ module Payroll
       end
     end
 
+    def self.current_applicable_year(date = Date.current)
+      fy = current_financial_year(date)
+      rules = YEAR_RULES[fy] || YEAR_RULES[FINANCIAL_YEAR]
+      rules[:applicable_year]
+    end
+
+    def self.current_tax_year(date = Date.current)
+      fy = current_financial_year(date)
+      rules = YEAR_RULES[fy] || YEAR_RULES[FINANCIAL_YEAR]
+      rules[:tax_year]
+    end
+
     def self.current_assessment_year(date = Date.current)
-      start_year = date.month >= 4 ? date.year + 1 : date.year
-      "AY #{start_year}-#{(start_year + 1).to_s[-2..]}"
+      current_applicable_year(date)
     end
 
     def self.calculate(annual_gross_salary, date: Date.current, financial_year: nil)
       new(annual_gross_salary, date: date, financial_year: financial_year).calculate
     end
 
-    attr_reader :financial_year, :assessment_year, :standard_deduction, :rebate_87a_limit, :slabs
+    attr_reader :financial_year, :tax_year, :applicable_year, :assessment_year, :standard_deduction, :rebate_87a_limit, :slabs
 
     def initialize(annual_gross_salary, date: Date.current, financial_year: nil)
       @date = date || Date.current
       @financial_year = financial_year || self.class.current_financial_year(@date)
       @year_config = YEAR_RULES[@financial_year] || YEAR_RULES[FINANCIAL_YEAR]
 
+      @applicable_year = @year_config[:applicable_year]
+      @tax_year = @year_config[:tax_year]
       @assessment_year = @year_config[:assessment_year]
       @standard_deduction = @year_config[:standard_deduction]
       @rebate_87a_limit = @year_config[:rebate_87a_limit]
@@ -112,6 +135,8 @@ module Payroll
       if @annual_gross <= 0.0
         return {
           financial_year: @financial_year,
+          tax_year: @tax_year,
+          applicable_year: @applicable_year,
           assessment_year: @assessment_year,
           supported_financial_years: SUPPORTED_FINANCIAL_YEARS,
           annual_gross: 0.0,
@@ -135,6 +160,8 @@ module Payroll
         raw_tax = compute_slab_tax(taxable_income)
         return {
           financial_year: @financial_year,
+          tax_year: @tax_year,
+          applicable_year: @applicable_year,
           assessment_year: @assessment_year,
           supported_financial_years: SUPPORTED_FINANCIAL_YEARS,
           annual_gross: @annual_gross.round(2),
@@ -169,6 +196,8 @@ module Payroll
 
       {
         financial_year: @financial_year,
+        tax_year: @tax_year,
+        applicable_year: @applicable_year,
         assessment_year: @assessment_year,
         supported_financial_years: SUPPORTED_FINANCIAL_YEARS,
         annual_gross: @annual_gross.round(2),

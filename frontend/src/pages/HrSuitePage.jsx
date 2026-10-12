@@ -585,7 +585,7 @@ export default function HrSuitePage() {
                           <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#38bdf8' }}>
                             New Regime (Sec 115BAC)
                           </Typography>
-                          <Chip label="Default FY 25-26" size="small" sx={{ bgcolor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 700 }} />
+                          <Chip label={`Default ${taxComparison?.tax_year || 'Tax Year 2026-27'}`} size="small" sx={{ bgcolor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 700 }} />
                         </Stack>
                         <Divider sx={{ mb: 2, borderColor: '#1e293b' }} />
 

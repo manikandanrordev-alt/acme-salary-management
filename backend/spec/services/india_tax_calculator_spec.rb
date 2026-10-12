@@ -4,11 +4,13 @@ require "rails_helper"
 
 RSpec.describe Payroll::IndiaTaxCalculator do
   describe ".calculate - Year-Specific Statutory Rules" do
-    it "determines active financial year as FY 2026-27 for current date (October 2026)" do
+    it "determines active financial year as FY 2026-27 and tax year as Tax Year 2026-27 for current date (October 2026)" do
       res = described_class.calculate(1_000_000, date: Date.new(2026, 10, 11))
 
       expect(res[:financial_year]).to eq("FY 2026-27")
-      expect(res[:assessment_year]).to eq("AY 2027-28")
+      expect(res[:tax_year]).to eq("Tax Year 2026-27")
+      expect(res[:applicable_year]).to eq("Tax Year 2026-27")
+      expect(res[:assessment_year]).to eq("Tax Year 2026-27")
       expect(res[:supported_financial_years]).to include("FY 2023-24", "FY 2024-25", "FY 2025-26", "FY 2026-27")
     end
 
@@ -16,6 +18,7 @@ RSpec.describe Payroll::IndiaTaxCalculator do
       res = described_class.calculate(1_000_000, date: Date.new(2025, 2, 1))
 
       expect(res[:financial_year]).to eq("FY 2024-25")
+      expect(res[:applicable_year]).to eq("AY 2025-26")
       expect(res[:assessment_year]).to eq("AY 2025-26")
     end
 
@@ -26,6 +29,7 @@ RSpec.describe Payroll::IndiaTaxCalculator do
       res = described_class.calculate(1_000_000, financial_year: "FY 2023-24")
 
       expect(res[:financial_year]).to eq("FY 2023-24")
+      expect(res[:applicable_year]).to eq("AY 2024-25")
       expect(res[:assessment_year]).to eq("AY 2024-25")
       expect(res[:standard_deduction]).to eq(50_000.0)
       expect(res[:taxable_income]).to eq(950_000.0)
@@ -42,6 +46,7 @@ RSpec.describe Payroll::IndiaTaxCalculator do
       res = described_class.calculate(1_000_000, financial_year: "FY 2024-25")
 
       expect(res[:financial_year]).to eq("FY 2024-25")
+      expect(res[:applicable_year]).to eq("AY 2025-26")
       expect(res[:assessment_year]).to eq("AY 2025-26")
       expect(res[:standard_deduction]).to eq(75_000.0)
       expect(res[:taxable_income]).to eq(925_000.0)
@@ -51,14 +56,17 @@ RSpec.describe Payroll::IndiaTaxCalculator do
       expect(res[:monthly_tds]).to eq(3_683.33)
     end
 
-    it "applies FY 2025-26 & FY 2026-27 statutory rules (₹4L/₹8L/₹12L/₹16L/₹20L/₹24L slabs and ₹12L 87A rebate)" do
+    it "applies FY 2025-26 & FY 2026-27 statutory rules with Tax Year 2026-27 terminology under Income-tax Act, 2025" do
       # Gross: 10,00,000 in FY 2026-27
       # Std Ded: 75,000 -> Taxable: 9,25,000
+      # Under Income-tax Act, 2025: Tax Year 2026-27 is used, discontinuing legacy AY 2027-28
       # Since taxable <= ₹12,00,000, 87A rebate wipes entire tax (tax = 0)
       res = described_class.calculate(1_000_000, financial_year: "FY 2026-27")
 
       expect(res[:financial_year]).to eq("FY 2026-27")
-      expect(res[:assessment_year]).to eq("AY 2027-28")
+      expect(res[:tax_year]).to eq("Tax Year 2026-27")
+      expect(res[:applicable_year]).to eq("Tax Year 2026-27")
+      expect(res[:assessment_year]).to eq("Tax Year 2026-27")
       expect(res[:standard_deduction]).to eq(75_000.0)
       expect(res[:taxable_income]).to eq(925_000.0)
       expect(res[:rebate_87a]).to eq(32_500.0) # 4-8L (20k) + 8-9.25L (12.5k)

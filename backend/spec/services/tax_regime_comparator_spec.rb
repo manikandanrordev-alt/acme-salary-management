@@ -13,6 +13,8 @@ RSpec.describe Payroll::TaxRegimeComparator do
       )
 
       expect(result[:recommended_regime]).to eq("NEW_REGIME")
+      expect(result[:tax_year]).to eq("Tax Year 2026-27")
+      expect(result[:applicable_year]).to eq("Tax Year 2026-27")
       expect(result[:new_regime][:standard_deduction]).to eq(75_000.0)
       expect(result[:annual_tax_difference]).to be > 0
     end
@@ -49,6 +51,7 @@ RSpec.describe Payroll::TaxRegimeComparator do
         financial_year: "FY 2023-24"
       )
 
+      expect(result_23[:applicable_year]).to eq("AY 2024-25")
       expect(result_23[:new_regime][:standard_deduction]).to eq(50_000.0)
       expect(result_23[:old_regime][:standard_deduction]).to eq(50_000.0)
     end

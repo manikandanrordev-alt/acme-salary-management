@@ -20,7 +20,7 @@ The backend service for ACME Salary Management, built on Ruby on Rails 8 API mod
    - Decomposes annual CTC into Component A (Monthly Gross), Component B (Employer Retirals: 12% PF, EPS, Gratuity Accrual, Insurance), and Component C (Diwali / Performance Bonus).
    - Produces exact net monthly in-hand take-home pay.
 4. **`Payroll::IndiaTaxCalculator`**:
-   - Multi-year TDS tax calculator under Indian New Tax Regime (FY 2023-24 through FY 2026-27) with official Income Tax Dept AY 2026-27 / AY 2027-28 slabs (₹4L - ₹24L) and Section 87A rebate/marginal relief.
+   - Multi-year TDS tax calculator under Indian New Tax Regime (FY 2023-24 through FY 2026-27) with official Income Tax Dept AY 2026-27 and Tax Year 2026-27 slabs (₹4L - ₹24L) per Income-tax Act, 2025 and Section 87A rebate/marginal relief.
 5. **`Payroll::DiwaliBonusService`**:
    - Payment of Bonus Act, 1965 festive bonus calculator (8.33% to 20%).
 6. **`Payroll::PayslipGenerator`**:

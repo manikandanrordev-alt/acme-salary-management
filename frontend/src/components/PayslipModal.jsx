@@ -70,7 +70,7 @@ export default function PayslipModal({ open, onClose, payslip, onEmailSent }) {
                   sx={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: 0.5 }}
                 />
                 <Typography variant="caption" sx={{ display: 'block', mt: 0.5, color: '#94a3b8' }}>
-                  Financial Year: <strong>FY {payslip.financial_year}</strong>
+                  {payslip.financial_year >= '2026' ? 'Tax Year' : 'Financial Year'}: <strong>{payslip.financial_year >= '2026' ? `Tax Year ${payslip.financial_year}` : `FY ${payslip.financial_year}`}</strong>
                 </Typography>
               </Box>
             </Box>
