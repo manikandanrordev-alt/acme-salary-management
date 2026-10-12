@@ -48,6 +48,8 @@ test:
 #
 production:
   <<: *default
-  database: <%= ENV.fetch("DB_NAME", "acme_salary_management_production") %>
+  database: <%= ENV.fetch("DB_NAME", "acme_salary_production") %>
   username: <%= ENV.fetch("DB_USERNAME", "root") %>
   password: <%= ENV.fetch("DB_PASSWORD", "password") %>
+  ssl_mode: <%= ENV.fetch("DB_SSL_MODE", "required") %>
+  sslca: <%= ENV["DB_SSL_CA"].presence || (File.exist?("/etc/ssl/certs/ca-certificates.crt") ? "/etc/ssl/certs/ca-certificates.crt" : nil) %>

@@ -43,6 +43,12 @@ module Backend
 
     # Enable cookies and sessions for secure Devise cookie-based authentication
     config.middleware.use ActionDispatch::Cookies
-    config.middleware.use ActionDispatch::Session::CookieStore, key: "_acme_salary_session", expire_after: 1.day
+    session_same_site = Rails.env.production? ? ENV.fetch("SESSION_SAME_SITE", "none").to_sym : :lax
+    session_secure = Rails.env.production?
+    config.middleware.use ActionDispatch::Session::CookieStore,
+      key: "_acme_salary_session",
+      expire_after: 1.day,
+      same_site: session_same_site,
+      secure: session_secure
   end
 end

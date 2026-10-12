@@ -51,10 +51,11 @@ class ApplicationController < ActionController::API
   end
 
   def set_csrf_cookie
+    csrf_same_site = Rails.env.production? ? ENV.fetch("SESSION_SAME_SITE", "none").to_sym : :lax
     cookies["CSRF-TOKEN"] = {
       value: form_authenticity_token,
       path: "/",
-      same_site: :lax,
+      same_site: csrf_same_site,
       secure: Rails.env.production?,
       httponly: false
     }

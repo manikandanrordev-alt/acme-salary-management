@@ -24,12 +24,11 @@ services:
       - key: DB_PASSWORD
         sync: false
       - key: DB_NAME
-        value: test
+        value: acme_salary_production
+      - key: DB_SSL_MODE
+        value: required
       - key: FRONTEND_URL
-        fromService:
-          type: web
-          name: acme-salary-frontend
-          property: url
+        sync: false
 
   # Frontend Vite React Static Site
   - type: web

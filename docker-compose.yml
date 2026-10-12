@@ -30,6 +30,7 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: password
       DB_NAME: acme_salary_management_production
+      DB_SSL_MODE: "disabled"
       SECRET_KEY_BASE: 5b1a03f8f17665de689456487103568478ef9302bbce56338ff91307bca5c16531dbbb0c418c3d9735d64e32d56a2fa80e6c518aa717e112d499878ce6c85e51
       RAILS_SERVE_STATIC_FILES: "true"
       RAILS_LOG_TO_STDOUT: "true"
