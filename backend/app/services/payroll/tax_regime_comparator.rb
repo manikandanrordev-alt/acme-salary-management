@@ -110,9 +110,11 @@ module Payroll
         end
 
         label = if current_limit == Float::INFINITY
-                  "Above ₹#{previous_limit.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse}"
+                  "Above ₹#{format_inr_lakhs(previous_limit)}"
+        elsif previous_limit.zero?
+                  "Up to ₹#{format_inr_lakhs(current_limit)}"
         else
-                  "₹#{previous_limit.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse} - ₹#{current_limit.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse}"
+                  "₹#{format_inr_lakhs(previous_limit + 1)} - ₹#{format_inr_lakhs(current_limit)}"
         end
 
         tax_for_slab = (taxable_in_slab * slab[:rate]).round(2)
@@ -120,6 +122,18 @@ module Payroll
 
         { slab: label, rate: "#{rate_percent}%", tax: tax_for_slab }
       end
+    end
+
+    def format_inr_lakhs(number)
+      return "0" if number.zero?
+
+      digits = number.to_i.to_s.chars
+      return digits.join if digits.length <= 3
+
+      last_three = digits.pop(3).join
+      remaining = digits.join
+      grouped_remaining = remaining.reverse.gsub(/(\d{2})(?=\d)/, '\\1,').reverse
+      "#{grouped_remaining},#{last_three}"
     end
 
     def calculate_old_regime

@@ -8,8 +8,8 @@ module Payroll
     #
     # Supported Financial Years and Legislative Authorities:
     # - FY 2023-24 (AY 2024-25): Finance Act, 2023 (Std Ded ₹50k, 6 slabs, 87A rebate up to ₹7L)
-    # - FY 2024-25 (AY 2025-26): Finance (No. 2) Act, 2024 (Std Ded ₹75k, 6 restructured slabs, 87A rebate up to ₹7L + marginal relief)
-    # - FY 2025-26 (AY 2026-27): Statutory rates continued under Finance Act
+    # - FY 2024-25 (AY 2025-26): Finance (No. 2) Act, 2024 (Std Ded ₹75k, 6 restructured slabs, 87A rebate up to ₹7L)
+    # - FY 2025-26 (AY 2026-27): CBDT Official Guidance for AY 2026-27 (Std Ded ₹75k, ₹4L-₹24L slabs, 87A rebate up to ₹12L + marginal relief)
     # - FY 2026-27 (AY 2027-28): Current Ongoing Financial Year (October 2026 operational year)
 
     YEAR_RULES = {
@@ -42,26 +42,28 @@ module Payroll
       "FY 2025-26" => {
         assessment_year: "AY 2026-27",
         standard_deduction: 75_000.0,
-        rebate_87a_limit: 700_000.0,
+        rebate_87a_limit: 1_200_000.0,
         slabs: [
-          { limit: 300_000.0, rate: 0.00 },
-          { limit: 700_000.0, rate: 0.05 },
-          { limit: 1_000_000.0, rate: 0.10 },
-          { limit: 1_200_000.0, rate: 0.15 },
-          { limit: 1_500_000.0, rate: 0.20 },
+          { limit: 400_000.0, rate: 0.00 },
+          { limit: 800_000.0, rate: 0.05 },
+          { limit: 1_200_000.0, rate: 0.10 },
+          { limit: 1_600_000.0, rate: 0.15 },
+          { limit: 2_000_000.0, rate: 0.20 },
+          { limit: 2_400_000.0, rate: 0.25 },
           { limit: Float::INFINITY, rate: 0.30 }
         ].freeze
       }.freeze,
       "FY 2026-27" => {
         assessment_year: "AY 2027-28",
         standard_deduction: 75_000.0,
-        rebate_87a_limit: 700_000.0,
+        rebate_87a_limit: 1_200_000.0,
         slabs: [
-          { limit: 300_000.0, rate: 0.00 },
-          { limit: 700_000.0, rate: 0.05 },
-          { limit: 1_000_000.0, rate: 0.10 },
-          { limit: 1_200_000.0, rate: 0.15 },
-          { limit: 1_500_000.0, rate: 0.20 },
+          { limit: 400_000.0, rate: 0.00 },
+          { limit: 800_000.0, rate: 0.05 },
+          { limit: 1_200_000.0, rate: 0.10 },
+          { limit: 1_600_000.0, rate: 0.15 },
+          { limit: 2_000_000.0, rate: 0.20 },
+          { limit: 2_400_000.0, rate: 0.25 },
           { limit: Float::INFINITY, rate: 0.30 }
         ].freeze
       }.freeze

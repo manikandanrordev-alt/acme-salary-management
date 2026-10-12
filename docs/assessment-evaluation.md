@@ -71,9 +71,9 @@ The solution is architected with a **Ruby on Rails 8 API** backend, a **React (M
 | :--- | :--- | :--- | :--- |
 | Backend Models & Seeds Integrity | RSpec | 28 | Passing |
 | Backend Queries | RSpec | 15 | Passing |
-| Backend Services (Tax, Gratuity, FNF, CTC) | RSpec | 31 | Passing |
+| Backend Services (Tax, Gratuity, FNF, CTC) | RSpec | 32 | Passing |
 | Backend Requests & API Controllers | RSpec | 55 | Passing |
-| **Total Backend Tests** | **RSpec 7.1** | **134** | **100% Passing (0 failures)** |
+| **Total Backend Tests** | **RSpec 7.1** | **135** | **100% Passing (0 failures)** |
 | Frontend Auth, Routing & Eye Toggle | Vitest & React Testing Library | 4 | Passing |
 | Frontend Analytics, CSV & Payroll Suites | Vitest & React Testing Library | 5 | Passing |
 | **Total Frontend Tests** | **Vitest 4.1** | **9** | **100% Passing (0 failures)** |

@@ -11,9 +11,19 @@ RSpec.describe Payroll::SalaryStructureService do
       expect(result[:special_allowance]).to eq(30_000.0)
       expect(result[:epf_deduction]).to eq(6_000.0) # 12% of basic
       expect(result[:pt_deduction]).to eq(200.0) # PT ₹200
-      expect(result[:tds_tax_deduction]).to eq(5_958.33)
+      # Under FY 2026-27 statutory rules, taxable income on ₹12L CTC is ₹11.25L,
+      # which is within the ₹12L Section 87A rebate ceiling resulting in ₹0 TDS
+      expect(result[:tds_tax_deduction]).to eq(0.0)
       expect(result[:lop_deduction]).to eq(0.0)
-      expect(result[:net_pay]).to be > 80_000.0
+      expect(result[:net_pay]).to be > 90_000.0
+    end
+
+    it "computes positive TDS for CTC exceeding the Section 87A rebate limit (e.g. ₹18,00,000 CTC)" do
+      result = described_class.decompose(1_800_000)
+
+      # Gross: 18L -> Taxable: 17.25L -> Annual Tax: 1,50,800 -> Monthly TDS: 12,566.67
+      expect(result[:tds_tax_deduction]).to eq(12_566.67)
+      expect(result[:net_pay]).to be > 100_000.0
     end
 
     it "applies Loss of Pay deduction for unpaid leave days" do

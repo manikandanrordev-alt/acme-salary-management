@@ -14,13 +14,13 @@ The backend service for ACME Salary Management, built on Ruby on Rails 8 API mod
    - Computes leave encashment under CBDT notification: `(Basic / 30) * Leave Days`.
    - Full & Final (F&F) settlement reconciliation.
 2. **`Payroll::TaxRegimeComparator`**:
-   - Compares New Tax Regime (Section 115BAC - standard deduction ₹75,000, 87A rebate, FY 24-25/25-26 slabs) vs Old Tax Regime (Section 80C, 80D, HRA, 24b, 80CCD).
+   - Compares New Tax Regime (Section 115BAC - standard deduction ₹75,000, 87A rebate, multi-year slabs: FY 2023-24 through FY 2026-27) vs Old Tax Regime (Section 80C, 80D, HRA, 24b, 80CCD).
    - Computes monthly TDS difference and breakeven deduction thresholds.
 3. **`Payroll::CtcBreakdownService`**:
    - Decomposes annual CTC into Component A (Monthly Gross), Component B (Employer Retirals: 12% PF, EPS, Gratuity Accrual, Insurance), and Component C (Diwali / Performance Bonus).
    - Produces exact net monthly in-hand take-home pay.
 4. **`Payroll::IndiaTaxCalculator`**:
-   - Monthly TDS tax calculator under Indian New Tax Regime FY 2024-25.
+   - Multi-year TDS tax calculator under Indian New Tax Regime (FY 2023-24 through FY 2026-27) with official Income Tax Dept AY 2026-27 / AY 2027-28 slabs (₹4L - ₹24L) and Section 87A rebate/marginal relief.
 5. **`Payroll::DiwaliBonusService`**:
    - Payment of Bonus Act, 1965 festive bonus calculator (8.33% to 20%).
 6. **`Payroll::PayslipGenerator`**:
@@ -45,7 +45,7 @@ The backend service for ACME Salary Management, built on Ruby on Rails 8 API mod
 All quality gates pass with zero failures:
 
 ```bash
-# 1. RSpec Test Suite (118 examples, 0 failures)
+# 1. RSpec Test Suite (135 examples, 0 failures)
 bundle exec rspec
 
 # 2. RuboCop Static Analysis (0 offenses)
