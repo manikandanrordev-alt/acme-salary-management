@@ -17,7 +17,8 @@ module Api
             warden.set_user(user, scope: :user)
             render json: {
               data: {
-                user: serialize_user(user)
+                user: serialize_user(user),
+                csrf_token: form_authenticity_token
               },
               message: "Logged in successfully"
             }, status: :ok
@@ -44,7 +45,8 @@ module Api
         def show
           render json: {
             data: {
-              user: serialize_user(current_user)
+              user: serialize_user(current_user),
+              csrf_token: form_authenticity_token
             }
           }, status: :ok
         end
