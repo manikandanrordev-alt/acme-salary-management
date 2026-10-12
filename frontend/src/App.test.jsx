@@ -374,8 +374,16 @@ describe('App Routing & Authentication Flow', () => {
       if (url === '/api/v1/hr_suite/appraisal_distribution') {
         return Promise.resolve({
           data: {
-            merit_pool_budget: 804600000,
             total_annual_wage_bill: 8940000000,
+            merit_pool_budget: 804600000,
+            approved_budget_percentage: 9.0,
+            salary_weighted_increment_rate: 8.78,
+            projected_increment_cost: 784485000,
+            reserve_buffer_surplus: 20115000,
+            is_projection: true,
+            calculation_type: 'projection_model',
+            methodology: 'assumed_salary_shares',
+            methodology_disclaimer: 'Projection based on assumed salary shares (target distribution quotas) across annual wage bill. Actual employee-level performance-band assignments are not implemented in the salary dataset.',
             bell_curve: [],
           },
         })

@@ -40,7 +40,7 @@ module Api
             name: "FY 2026-27 Executive Appraisal & Merit Cycle",
             status: "IN_PROGRESS",
             allocated_budget: (annual_wage_bill * 0.09).round(2), # 9% merit pool
-            recommended_average_increment: 9.2,
+            recommended_average_increment: 9.0,
             target_completion_date: "31-Oct-2026"
           }
         }
@@ -134,29 +134,8 @@ module Api
 
       # GET /api/v1/hr_suite/appraisal_distribution
       def appraisal_distribution
-        currency = params[:currency].presence
-        records = SalaryRecord.current
-        records = records.where(currency: currency) if currency.present?
-
-        annual_wage_bill = records.sum(:amount).to_f.round(2)
-        monthly_wage_bill = (annual_wage_bill / 12.0).round(2)
-        total_headcount = currency.present? ? Employee.joins(:salary_records).merge(records).count : Employee.count
-
-        render json: {
-          total_headcount: total_headcount,
-          total_monthly_wage_bill: monthly_wage_bill,
-          total_annual_wage_bill: annual_wage_bill,
-          merit_pool_budget: (annual_wage_bill * 0.09).round(2), # 9% merit pool
-          period: "annual",
-          currency: currency || "INR",
-          bell_curve: [
-            { rating: "Band 5 (Outstanding / Top 10%)", target_percentage: 10, employee_count: (total_headcount * 0.10).round, recommended_increment: "15% - 22%", avg_increment: 18.0 },
-            { rating: "Band 4 (Exceeds Expectations / 25%)", target_percentage: 25, employee_count: (total_headcount * 0.25).round, recommended_increment: "11% - 14%", avg_increment: 12.5 },
-            { rating: "Band 3 (Consistently Meets / 50%)", target_percentage: 50, employee_count: (total_headcount * 0.50).round, recommended_increment: "7% - 10%", avg_increment: 8.5 },
-            { rating: "Band 2 (Needs Improvement / 12%)", target_percentage: 12, employee_count: (total_headcount * 0.12).round, recommended_increment: "2% - 5%", avg_increment: 3.5 },
-            { rating: "Band 1 (Unsatisfactory / PIP / 3%)", target_percentage: 3, employee_count: (total_headcount * 0.03).round, recommended_increment: "0%", avg_increment: 0.0 }
-          ]
-        }
+        result = Payroll::AppraisalDistributionService.calculate(currency: params[:currency])
+        render json: result
       end
 
       private

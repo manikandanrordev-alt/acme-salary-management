@@ -103,5 +103,30 @@ RSpec.describe "Api::V1::HrSuite", type: :request do
       expect(json["bell_curve"].size).to eq(5)
       expect(json).to include("merit_pool_budget")
     end
+
+    it "reconciles approved 9% budget against salary-weighted projected cost without budget deficit" do
+      get "/api/v1/hr_suite/appraisal_distribution"
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+
+      annual_wage_bill = json["total_annual_wage_bill"]
+      approved_budget = json["merit_pool_budget"]
+      projected_cost = json["projected_increment_cost"]
+      reserve_buffer = json["reserve_buffer_surplus"]
+      salary_weighted_rate = json["salary_weighted_increment_rate"]
+
+      expect(approved_budget).to eq((annual_wage_bill * 0.09).round(2))
+      expect(json["approved_budget_percentage"]).to eq(9.0)
+      expect(salary_weighted_rate).to be <= 9.0
+      expect(projected_cost).to be <= approved_budget
+      expect(reserve_buffer).to be >= 0.0
+
+      target_percentages = json["bell_curve"].sum { |tier| tier["target_percentage"] }
+      expect(target_percentages).to eq(100)
+
+      tier_costs_sum = json["bell_curve"].sum { |tier| tier["projected_cost"] }.round(2)
+      expect(tier_costs_sum).to eq(projected_cost)
+    end
   end
 end

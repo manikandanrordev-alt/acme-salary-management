@@ -1231,24 +1231,44 @@ export default function HrSuitePage() {
 
                 <Stack spacing={2.5}>
                   <Box>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>Total Allocated Merit Pool:</Typography>
-                    <Typography variant="h5" className="num-font glow-amber" sx={{ fontWeight: 800, color: '#fbbf24' }}>
-                      {appraisalData?.merit_pool_budget ? formatLakhsCrores(appraisalData.merit_pool_budget) : '₹80.46 Cr'}
-                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>Approved Merit Pool Target:</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="h5" className="num-font glow-amber" sx={{ fontWeight: 800, color: '#fbbf24' }}>
+                        {appraisalData?.merit_pool_budget ? formatLakhsCrores(appraisalData.merit_pool_budget) : '₹64.09 Cr'}
+                      </Typography>
+                      <Chip label={`${appraisalData?.approved_budget_percentage || 9.0}% Target`} size="small" sx={{ fontWeight: 700, bgcolor: 'rgba(251, 191, 36, 0.15)', color: '#fbbf24', fontSize: '0.7rem' }} />
+                    </Box>
                   </Box>
 
                   <Box>
                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>Enterprise Annual Wage Bill:</Typography>
                     <Typography variant="h6" className="num-font" sx={{ fontWeight: 700, color: '#f8fafc' }}>
-                      {appraisalData?.total_annual_wage_bill ? formatLakhsCrores(appraisalData.total_annual_wage_bill) : '₹894.00 Cr'}
+                      {appraisalData?.total_annual_wage_bill ? formatLakhsCrores(appraisalData.total_annual_wage_bill) : '₹712.10 Cr'}
                     </Typography>
                   </Box>
 
                   <Box>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>Average Increment Target:</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>Actual Salary-Weighted Rate:</Typography>
+                      {appraisalData?.is_projection && (
+                        <Chip
+                          label="Projection Model"
+                          size="small"
+                          sx={{ height: 18, fontSize: '0.65rem', fontWeight: 600, bgcolor: 'rgba(56, 189, 248, 0.12)', color: '#38bdf8' }}
+                        />
+                      )}
+                    </Box>
                     <Typography variant="h6" className="num-font" sx={{ fontWeight: 700, color: '#34d399' }}>
-                      9.2% Overall Organization Average
+                      {appraisalData?.salary_weighted_increment_rate ? `${appraisalData.salary_weighted_increment_rate}%` : '8.78%'} Weighted Increment Cost
                     </Typography>
+                    <Typography variant="caption" sx={{ color: '#38bdf8', display: 'block', mt: 0.3 }}>
+                      Projected Cost: {formatLakhsCrores(appraisalData?.projected_increment_cost || 624868604)} • Reserve Surplus: {formatLakhsCrores(appraisalData?.reserve_buffer_surplus || 16022272)}
+                    </Typography>
+                    {appraisalData?.methodology_disclaimer && (
+                      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5, fontStyle: 'italic', fontSize: '0.68rem', lineHeight: 1.25 }}>
+                        {appraisalData.methodology_disclaimer}
+                      </Typography>
+                    )}
                   </Box>
 
                   <Button
@@ -1289,6 +1309,7 @@ export default function HrSuitePage() {
                         <TableCell sx={{ color: 'text.secondary', fontWeight: 700 }}>Target Quota</TableCell>
                         <TableCell sx={{ color: 'text.secondary', fontWeight: 700 }}>Employees</TableCell>
                         <TableCell sx={{ color: 'text.secondary', fontWeight: 700 }}>Increment Range</TableCell>
+                        <TableCell sx={{ color: 'text.secondary', fontWeight: 700 }}>Projected Cost</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -1301,10 +1322,13 @@ export default function HrSuitePage() {
                             <Chip label={`${row.target_percentage}%`} size="small" sx={{ fontWeight: 700 }} />
                           </TableCell>
                           <TableCell className="num-font" sx={{ fontWeight: 600 }}>
-                            {row.employee_count.toLocaleString('en-IN')}
+                            {row.employee_count?.toLocaleString('en-IN') ?? '-'}
                           </TableCell>
                           <TableCell className="num-font" sx={{ fontWeight: 700, color: '#38bdf8' }}>
                             {row.recommended_increment}
+                          </TableCell>
+                          <TableCell className="num-font" sx={{ fontWeight: 600, color: '#f8fafc' }}>
+                            {row.projected_cost ? formatLakhsCrores(row.projected_cost) : '-'}
                           </TableCell>
                         </TableRow>
                       ))}
